@@ -763,6 +763,24 @@
       margin-bottom: 12px;
     }
 
+    .audio-track-btn {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border: 1px solid var(--rule-light);
+      background: none;
+      color: var(--ink-ghost);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .audio-track-btn.active {
+      background: var(--ink);
+      color: var(--paper-aged);
+      border-color: var(--ink);
+    }
+
     /* ── SCROLLBARS ──────────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -827,8 +845,19 @@
   <header id="masthead">
     <div class="masthead-top">
       <span class="masthead-dateline" id="date-display">London, 4. März 1881</span>
-      <button class="masthead-settings-btn" onclick="openSettings()">Einstellungen</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="masthead-settings-btn" id="audio-btn" onclick="toggleAudio()" title="Atmosphärische Musik">&#9654; Musik</button>
+        <button class="masthead-settings-btn" onclick="openSettings()">Einstellungen</button>
+      </div>
     </div>
+
+    <!-- Audio track selector — appears when playing -->
+    <div id="audio-bar" style="display:none; padding:4px 14px 0; gap:4px; flex-wrap:wrap;">
+      <button class="audio-track-btn active" onclick="setTrack(0)" data-track="0">I &middot; Kaminfeuer</button>
+      <button class="audio-track-btn" onclick="setTrack(1)" data-track="1">II &middot; Londoner Regen</button>
+      <button class="audio-track-btn" onclick="setTrack(2)" data-track="2">III &middot; Baker Street</button>
+    </div>
+
     <div class="masthead-title-block">
       <span class="masthead-kicker">Ein Watson-Bericht &middot; Baker Street &middot; Bd. I</span>
       <div class="masthead-title">Eine Studie in Scharlachrot</div>
@@ -898,9 +927,9 @@
       <!-- PRIMARY: Holmes portrait — Paget's iconic standing Holmes -->
       <div class="illustration-box">
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sherlock_Holmes_-_by_Sidney_Paget.jpg/320px-Sherlock_Holmes_-_by_Sidney_Paget.jpg"
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png"
           alt="Sidney Paget: Sherlock Holmes"
-          onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Paget_holmes.png/320px-Paget_holmes.png'; this.onerror=null;"
+          onerror="this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png'; this.onerror=null;"
         >
         <div class="illustration-caption">Sherlock Holmes &mdash; Zeichnung von Sidney Paget, The Strand Magazine, 1891</div>
       </div>
@@ -918,7 +947,7 @@
       <!-- Holmes with pipe — Paget's Man with Twisted Lip illustration -->
       <div class="illustration-box" style="margin-top:16px">
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg/320px-Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg"
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg"
           alt="Sidney Paget: Holmes in der Pfeife"
           onerror="this.parentElement.style.display='none'"
         >
@@ -936,7 +965,7 @@
       <!-- Watson portrait illustration -->
       <div class="illustration-box" style="margin-top:16px">
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg/320px-Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg"
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg"
           alt="Sidney Paget: Holmes und Watson, Scandal in Bohemia"
           onerror="this.parentElement.style.display='none'"
         >
@@ -950,7 +979,7 @@
       <!-- Final Paget: Holmes investigating (The Speckled Band) -->
       <div class="illustration-box" style="margin-top:20px">
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg/320px-Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg"
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg"
           alt="Sidney Paget: Holmes untersucht"
           onerror="this.parentElement.style.display='none'"
         >
@@ -1481,28 +1510,28 @@ document.getElementById('user-input').addEventListener('keydown', function(e) {
 // ══════════════════════════════════════════════════════════════════
 var PAGET = {
   opening: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sherlock_Holmes_-_by_Sidney_Paget.jpg/280px-Sherlock_Holmes_-_by_Sidney_Paget.jpg',
-    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Paget_holmes.png/280px-Paget_holmes.png',
+    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png',
+    fallback: 'https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png',
     caption: 'Sherlock Holmes — Baker Street 221B. Sidney Paget, The Strand Magazine, 1891'
   },
   brixton: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg/280px-Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg',
+    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg',
     caption: '\u201eEr kniete nieder und untersuchte jeden Zentimeter des Bodens.\u201c \u2014 Paget, 1891'
   },
   watson: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg/280px-Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg',
+    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg',
     caption: 'Holmes und Watson \u2014 \u201eA Scandal in Bohemia\u201c, Paget, 1891'
   },
   interrogation: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg/280px-Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg',
+    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg',
     caption: '\u201eHolmes betrachtete ihn mit jenem ruhigen, durchdringenden Blick.\u201c \u2014 Paget, 1892'
   },
   deduction: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Sherlock_Holmes_-_The_Naval_Treaty_2.jpg/280px-Sherlock_Holmes_-_The_Naval_Treaty_2.jpg',
+    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Smoking_Gun_Paget_(cropped).jpg',
     caption: '\u201eSie werden finden, mein lieber Watson, dass ich selten irre.\u201c \u2014 Paget, 1893'
   },
   scotlandyard: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Sherlock_Holmes_-_The_Adventure_of_the_Greek_Interpreter.jpg/280px-Sherlock_Holmes_-_The_Adventure_of_the_Greek_Interpreter.jpg',
+    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_Portrait_Paget.jpg',
     caption: 'Begegnung mit den Behoerden \u2014 Paget, \u201eThe Greek Interpreter\u201c, 1893'
   }
 };
@@ -1622,6 +1651,267 @@ function init() {
       startCase();
     }
   }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  AMBIENT AUDIO  —  Web Audio API (prozedural, keine externen Dateien)
+//
+//  Drei Atmosphären vollständig im Browser generiert:
+//  0 — Kaminfeuer  (weißes Rauschen gefiltert + Knistern)
+//  1 — Londoner Regen (Rauschen + tiefes Grollen + Tropfen)
+//  2 — Baker Street (Kaminfeuer + leises Regen + Uhrticken)
+// ══════════════════════════════════════════════════════════════════
+var audioCtx = null;
+var audioPlaying = false;
+var currentTrack = 0;
+var activeNodes = [];   // alle laufenden Nodes zum Stoppen
+var masterGain = null;
+
+function getAudioCtx() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// ── Hilfsfunktionen ───────────────────────────────────────────────
+
+function makeNoise(ctx, type) {
+  // Weißes oder braunes Rauschen via ScriptProcessor
+  var bufSize = 4096;
+  var node = ctx.createScriptProcessor(bufSize, 1, 1);
+  var lastOut = 0;
+  node.onaudioprocess = function(e) {
+    var out = e.outputBuffer.getChannelData(0);
+    for(var i = 0; i < bufSize; i++) {
+      var white = Math.random() * 2 - 1;
+      if(type === 'brown') {
+        out[i] = (lastOut + 0.02 * white) / 1.02;
+        lastOut = out[i];
+        out[i] *= 3.5;
+      } else {
+        out[i] = white;
+      }
+    }
+  };
+  return node;
+}
+
+function makeBiquad(ctx, type, freq, Q, gain) {
+  var f = ctx.createBiquadFilter();
+  f.type = type;
+  f.frequency.value = freq;
+  if(Q !== undefined) f.Q.value = Q;
+  if(gain !== undefined) f.gain.value = gain;
+  return f;
+}
+
+function makeGain(ctx, val) {
+  var g = ctx.createGain();
+  g.gain.value = val;
+  return g;
+}
+
+function makeLFO(ctx, freq, depth, target, param) {
+  // Slow oscillation for organic movement
+  var osc = ctx.createOscillator();
+  var g = ctx.createGain();
+  osc.frequency.value = freq;
+  g.gain.value = depth;
+  osc.connect(g);
+  g.connect(param);
+  osc.start();
+  return [osc, g];
+}
+
+function connect() {
+  // Helper: chain .connect calls
+  var nodes = Array.prototype.slice.call(arguments);
+  for(var i = 0; i < nodes.length - 1; i++) {
+    nodes[i].connect(nodes[i+1]);
+  }
+}
+
+function track(node) { activeNodes.push(node); return node; }
+
+// ── TRACK 0: Kaminfeuer ───────────────────────────────────────────
+function startFireplace(ctx, dest) {
+  // Base fire rumble — brown noise, lowpass
+  var noise = track(makeNoise(ctx, 'brown'));
+  var lp = makeBiquad(ctx, 'lowpass', 800, 0.8);
+  var hp = makeBiquad(ctx, 'highpass', 60);
+  var fireGain = makeGain(ctx, 0.18);
+
+  // Crackle layer — white noise, bandpass, intermittent
+  var crackNoise = track(makeNoise(ctx, 'white'));
+  var crackBp = makeBiquad(ctx, 'bandpass', 2000, 4);
+  var crackGain = makeGain(ctx, 0);
+
+  // LFO for fire flicker
+  var flickerLFO = makeLFO(ctx, 0.3, 0.06, null, fireGain.gain);
+
+  // Crackle envelope — random pops
+  function scheduleCrackle() {
+    var now = ctx.currentTime;
+    var vol = Math.random() * 0.08 + 0.01;
+    var dur = Math.random() * 0.08 + 0.02;
+    crackGain.gain.cancelScheduledValues(now);
+    crackGain.gain.setValueAtTime(0, now);
+    crackGain.gain.linearRampToValueAtTime(vol, now + 0.01);
+    crackGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    var next = Math.random() * 0.8 + 0.1;
+    var t = setTimeout(scheduleCrackle, next * 1000);
+    activeNodes.push({ disconnect: function(){ clearTimeout(t); } });
+  }
+  scheduleCrackle();
+
+  connect(noise, lp, hp, fireGain, dest);
+  connect(crackNoise, crackBp, crackGain, dest);
+
+  activeNodes.push(noise, lp, hp, fireGain, crackNoise, crackBp, crackGain);
+  activeNodes.push(flickerLFO[0], flickerLFO[1]);
+}
+
+// ── TRACK 1: Londoner Regen ───────────────────────────────────────
+function startRain(ctx, dest) {
+  // Heavy rain — white noise, highpass
+  var noise = track(makeNoise(ctx, 'white'));
+  var hp = makeBiquad(ctx, 'highpass', 400);
+  var lp = makeBiquad(ctx, 'lowpass', 8000);
+  var rainGain = makeGain(ctx, 0.22);
+
+  // Distant thunder rumble — brown noise, very low
+  var thunder = track(makeNoise(ctx, 'brown'));
+  var tLp = makeBiquad(ctx, 'lowpass', 120);
+  var tGain = makeGain(ctx, 0.08);
+
+  // Rain intensity LFO — slow wave
+  var intensityLFO = makeLFO(ctx, 0.08, 0.05, null, rainGain.gain);
+
+  // Occasional drip/drop — short bandpass bursts
+  function scheduleDrop() {
+    var now = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var env = ctx.createGain();
+    osc.frequency.value = 800 + Math.random() * 400;
+    osc.type = 'sine';
+    env.gain.setValueAtTime(0, now);
+    env.gain.linearRampToValueAtTime(0.03, now + 0.005);
+    env.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+    osc.connect(env);
+    env.connect(dest);
+    osc.start(now);
+    osc.stop(now + 0.2);
+    var next = Math.random() * 1.5 + 0.3;
+    var t = setTimeout(scheduleDrop, next * 1000);
+    activeNodes.push({ disconnect: function(){ clearTimeout(t); } });
+  }
+  scheduleDrop();
+
+  connect(noise, hp, lp, rainGain, dest);
+  connect(thunder, tLp, tGain, dest);
+  activeNodes.push(noise, hp, lp, rainGain, thunder, tLp, tGain);
+  activeNodes.push(intensityLFO[0], intensityLFO[1]);
+}
+
+// ── TRACK 2: Baker Street (Kamin + leiser Regen + Uhr) ───────────
+function startBakerStreet(ctx, dest) {
+  // Soft fireplace
+  var noise = track(makeNoise(ctx, 'brown'));
+  var lp = makeBiquad(ctx, 'lowpass', 600, 0.6);
+  var hp = makeBiquad(ctx, 'highpass', 80);
+  var fireGain = makeGain(ctx, 0.10);
+  var flickerLFO = makeLFO(ctx, 0.25, 0.04, null, fireGain.gain);
+
+  // Rain on window — distant, soft
+  var rainNoise = track(makeNoise(ctx, 'white'));
+  var rHp = makeBiquad(ctx, 'highpass', 3000);
+  var rLp = makeBiquad(ctx, 'lowpass', 10000);
+  var rainGain = makeGain(ctx, 0.04);
+
+  // Clock ticking
+  function scheduleTick() {
+    var now = ctx.currentTime;
+    // Tick
+    var osc = ctx.createOscillator();
+    var env = ctx.createGain();
+    osc.frequency.value = 1200;
+    osc.type = 'square';
+    env.gain.setValueAtTime(0, now);
+    env.gain.linearRampToValueAtTime(0.04, now + 0.003);
+    env.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+    osc.connect(env);
+    env.connect(dest);
+    osc.start(now);
+    osc.stop(now + 0.07);
+    // Tock (slightly lower)
+    var osc2 = ctx.createOscillator();
+    var env2 = ctx.createGain();
+    osc2.frequency.value = 1000;
+    osc2.type = 'square';
+    env2.gain.setValueAtTime(0, now + 0.5);
+    env2.gain.linearRampToValueAtTime(0.03, now + 0.503);
+    env2.gain.exponentialRampToValueAtTime(0.0001, now + 0.56);
+    osc2.connect(env2);
+    env2.connect(dest);
+    osc2.start(now + 0.5);
+    osc2.stop(now + 0.57);
+    var t = setTimeout(scheduleTick, 1000);
+    activeNodes.push({ disconnect: function(){ clearTimeout(t); } });
+  }
+  scheduleTick();
+
+  connect(noise, lp, hp, fireGain, dest);
+  connect(rainNoise, rHp, rLp, rainGain, dest);
+  activeNodes.push(noise, lp, hp, fireGain, rainNoise, rHp, rLp, rainGain);
+  activeNodes.push(flickerLFO[0], flickerLFO[1]);
+}
+
+// ── PLAYER CONTROLS ───────────────────────────────────────────────
+
+function stopAllAudio() {
+  activeNodes.forEach(function(n) {
+    try {
+      if(n.stop) n.stop();
+      if(n.disconnect) n.disconnect();
+    } catch(e) {}
+  });
+  activeNodes = [];
+}
+
+function startTrack(idx) {
+  stopAllAudio();
+  var ctx = getAudioCtx();
+  if(ctx.state === 'suspended') ctx.resume();
+
+  masterGain = ctx.createGain();
+  masterGain.gain.value = 0.7;
+  masterGain.connect(ctx.destination);
+  activeNodes.push(masterGain);
+
+  if(idx === 0) startFireplace(ctx, masterGain);
+  else if(idx === 1) startRain(ctx, masterGain);
+  else startBakerStreet(ctx, masterGain);
+}
+
+function toggleAudio() {
+  if(!audioPlaying) {
+    document.getElementById('audio-bar').style.display = 'flex';
+    document.getElementById('audio-btn').textContent = '\u25A0 Ton';
+    audioPlaying = true;
+    startTrack(currentTrack);
+  } else {
+    stopAllAudio();
+    document.getElementById('audio-btn').textContent = '\u25BA Ton';
+    document.getElementById('audio-bar').style.display = 'none';
+    audioPlaying = false;
+  }
+}
+
+function setTrack(idx) {
+  currentTrack = idx;
+  document.querySelectorAll('.audio-track-btn').forEach(function(b) {
+    b.classList.toggle('active', parseInt(b.dataset.track) === idx);
+  });
+  if(audioPlaying) startTrack(idx);
 }
 
 window.addEventListener('load', init);
