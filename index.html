@@ -1052,10 +1052,144 @@
     }
     .quick-btn:hover { border-color: var(--rule); color: var(--ink); }
     .quick-btn:active { background: var(--ink); color: var(--paper-aged); }
+
+    /* ── TTS BUTTON on messages ──────────────────────────────────── */
+    .tts-btn {
+      background: none;
+      border: 1px solid var(--rule-light);
+      color: var(--ink-ghost);
+      font-family: var(--font-type);
+      font-size: 8px;
+      padding: 2px 6px;
+      cursor: pointer;
+      margin-top: 4px;
+      display: inline-block;
+      transition: all 0.1s;
+    }
+    .tts-btn:hover { border-color: var(--rule); color: var(--ink); }
+    .tts-btn.speaking { color: var(--blood); border-color: var(--blood); }
+
+    /* ── SPLASH SCREEN ───────────────────────────────────────────── */
+    #splash {
+      position: absolute;
+      inset: 0;
+      z-index: 500;
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      text-align: center;
+      overflow-y: auto;
+    }
+    #splash.hidden { display: none; }
+    .splash-ornament {
+      color: var(--paper-aged);
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+    .splash-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      font-weight: 900;
+      font-style: italic;
+      color: var(--paper-aged);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .splash-subtitle {
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--ink-ghost);
+      margin-bottom: 32px;
+    }
+    .splash-rule {
+      width: 60px;
+      height: 1px;
+      background: var(--rule);
+      margin: 0 auto 28px;
+    }
+    .splash-case-grid {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .splash-case-btn {
+      background: none;
+      border: 1px solid rgba(242,234,216,0.2);
+      color: var(--paper-aged);
+      font-family: var(--font-text);
+      font-size: 14px;
+      font-style: italic;
+      padding: 14px 18px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .splash-case-btn:hover {
+      background: rgba(242,234,216,0.08);
+      border-color: rgba(242,234,216,0.5);
+    }
+    .splash-case-btn.locked {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .splash-case-meta {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink-ghost);
+      margin-top: 2px;
+      display: block;
+    }
+    .splash-case-year {
+      font-family: var(--font-type);
+      font-size: 9px;
+      color: var(--ink-ghost);
+    }
+    .splash-quote {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-style: italic;
+      color: rgba(242,234,216,0.4);
+      max-width: 280px;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
 <div id="app">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <div class="splash-ornament">Baker Street &middot; London &middot; 1881</div>
+    <div class="splash-title">Sherlock Holmes</div>
+    <div class="splash-subtitle">Interaktive Detektivspiele</div>
+    <div class="splash-rule"></div>
+
+    <div class="splash-case-grid" id="splash-case-grid">
+      <!-- rendered by JS -->
+    </div>
+
+    <div class="splash-quote">
+      &ldquo;Das Spiel ist im Gange, Watson.&rdquo;
+    </div>
+  </div>
 
   <!-- MASTHEAD -->
   <header id="masthead">
@@ -1203,16 +1337,56 @@
     <div class="settings-box">
       <div class="settings-head">Einstellungen des Berichterstatters</div>
       <div class="settings-body">
-        <span class="settings-label">OpenAI API-Schlussel</span>
+        <span class="settings-label">OpenAI API-Schlüssel</span>
         <input type="password" class="settings-input" id="api-key-input" placeholder="sk-...">
-        <p class="settings-note">Ihr Schlussel wird ausschliesslich lokal im Browser gespeichert und niemals ubertragen. Nur fur die KI-Narration benotigt.</p>
-        <span class="settings-label">Modell</span>
+        <p class="settings-note">Lokal gespeichert, nie übertragen. Für KI-Narration und optionales TTS benötigt.</p>
+
+        <span class="settings-label">KI-Modell</span>
         <select class="settings-input" id="model-select">
           <option value="gpt-4o">GPT-4o (empfohlen)</option>
-          <option value="gpt-4o-mini">GPT-4o-mini (gunstig)</option>
+          <option value="gpt-4o-mini">GPT-4o-mini (günstig)</option>
           <option value="gpt-4-turbo">GPT-4 Turbo</option>
         </select>
-        <div class="settings-btn-row">
+
+        <span class="settings-label">Antwortsprache</span>
+        <select class="settings-input" id="lang-select">
+          <option value="de">Deutsch (Standard)</option>
+          <option value="en">Englisch (bessere TTS-Stimmen)</option>
+        </select>
+        <p class="settings-note">Englisch empfohlen wenn Text-to-Speech aktiviert — die englischen Stimmen sind atmosphärischer.</p>
+
+        <span class="settings-label">Text-to-Speech (Vorlesefunktion)</span>
+        <select class="settings-input" id="tts-mode-select">
+          <option value="off">Aus</option>
+          <option value="browser">Browser-TTS (kostenlos, offline)</option>
+          <option value="openai">OpenAI TTS (beste Qualität, ~0.002ct/Satz)</option>
+        </select>
+
+        <div id="tts-browser-opts" style="display:none;margin-top:8px">
+          <span class="settings-label" style="margin-top:0">Stimme</span>
+          <select class="settings-input" id="tts-voice-select">
+            <option value="">Automatisch (beste verfügbare)</option>
+          </select>
+          <span class="settings-label">Tonlage (0.5 = tiefer, 1.5 = höher)</span>
+          <input type="range" id="tts-pitch" min="0.5" max="1.5" step="0.1" value="0.8"
+            style="width:100%;accent-color:var(--ink);margin-top:4px">
+          <span class="settings-label">Geschwindigkeit</span>
+          <input type="range" id="tts-rate" min="0.6" max="1.2" step="0.05" value="0.85"
+            style="width:100%;accent-color:var(--ink);margin-top:4px">
+        </div>
+
+        <div id="tts-openai-opts" style="display:none;margin-top:8px">
+          <span class="settings-label" style="margin-top:0">Stimme</span>
+          <select class="settings-input" id="tts-openai-voice">
+            <option value="onyx">Onyx (tief, dramatisch — Watson-ideal)</option>
+            <option value="echo">Echo (klar, britisch)</option>
+            <option value="fable">Fable (warm, erzählerisch)</option>
+            <option value="alloy">Alloy (neutral)</option>
+            <option value="shimmer">Shimmer (weicher)</option>
+          </select>
+        </div>
+
+        <div class="settings-btn-row" style="margin-top:16px">
           <button class="btn-primary" onclick="saveSettings()">Speichern</button>
           <button class="btn-secondary" onclick="closeSettings()">Abbrechen</button>
         </div>
@@ -1648,7 +1822,7 @@ function buildSystemPrompt() {
     '- Der Täter ist Jefferson Hope. Wird NIE direkt verraten.',
     '- Halluziniere KEINE Fakten die nicht im Kanon sind.',
     '- Antworten unter 180 Wörter.',
-    '- Antworte immer auf Deutsch.',
+    '- Antworte ' + (getTTSLang() === 'en' ? 'auf ENGLISCH. Auch wenn der Spieler Deutsch schreibt, antworte immer auf Englisch.' : 'auf Deutsch.'),
     '',
     'BEWEIS-MECHANIK:',
     '- Beweise werden NUR freigeschaltet wenn der Spieler aktiv danach sucht.',
@@ -1826,6 +2000,11 @@ function addMsg(type, speaker, html) {
   body.className = 'msg-body';
   body.innerHTML = html;
   block.appendChild(body);
+
+  // TTS button on AI/evidence messages
+  if((type === 'ai' || type === 'evidence') && getTTSMode() !== 'off') {
+    addTTSButton(block, html);
+  }
 
   area.appendChild(block);
   area.scrollTop = area.scrollHeight;
@@ -2150,10 +2329,24 @@ function closeSettings() { document.getElementById('settings-overlay').classList
 function saveSettings() {
   var key = document.getElementById('api-key-input').value.trim();
   var model = document.getElementById('model-select').value;
+  var lang = document.getElementById('lang-select').value;
+  var ttsMode = document.getElementById('tts-mode-select').value;
+  var ttsVoice = document.getElementById('tts-voice-select') ? document.getElementById('tts-voice-select').value : '';
+  var ttsPitch = document.getElementById('tts-pitch') ? document.getElementById('tts-pitch').value : '0.8';
+  var ttsRate = document.getElementById('tts-rate') ? document.getElementById('tts-rate').value : '0.85';
+  var openaiVoice = document.getElementById('tts-openai-voice') ? document.getElementById('tts-openai-voice').value : 'onyx';
+
   if(key) localStorage.setItem('sh_openai_key', key);
   localStorage.setItem('sh_model', model);
+  localStorage.setItem('sh_lang', lang);
+  localStorage.setItem('sh_tts_mode', ttsMode);
+  localStorage.setItem('sh_tts_voice', ttsVoice);
+  localStorage.setItem('sh_tts_pitch', ttsPitch);
+  localStorage.setItem('sh_tts_rate', ttsRate);
+  localStorage.setItem('sh_tts_openai_voice', openaiVoice);
+
   closeSettings();
-  if(key && !G.caseStarted) startCase();
+  if(key && !G.caseStarted) { hideSplash(); }
 }
 
 function openVerdict() { document.getElementById('verdict-overlay').classList.add('open'); }
@@ -2394,34 +2587,53 @@ async function init() {
   // Load settings into form
   var savedKey = localStorage.getItem('sh_openai_key') || '';
   var savedModel = localStorage.getItem('sh_model') || 'gpt-4o';
+  var savedLang = localStorage.getItem('sh_lang') || 'de';
+  var savedTTSMode = localStorage.getItem('sh_tts_mode') || 'off';
+  var savedTTSPitch = localStorage.getItem('sh_tts_pitch') || '0.8';
+  var savedTTSRate = localStorage.getItem('sh_tts_rate') || '0.85';
+  var savedOpenAIVoice = localStorage.getItem('sh_tts_openai_voice') || 'onyx';
+
   if(savedKey) document.getElementById('api-key-input').value = savedKey;
   document.getElementById('model-select').value = savedModel;
+  var langSel = document.getElementById('lang-select');
+  if(langSel) langSel.value = savedLang;
+  var ttsSel = document.getElementById('tts-mode-select');
+  if(ttsSel) {
+    ttsSel.value = savedTTSMode;
+    updateTTSOptions(savedTTSMode);
+    ttsSel.addEventListener('change', function(){ updateTTSOptions(this.value); });
+  }
+  var pitchEl = document.getElementById('tts-pitch');
+  if(pitchEl) pitchEl.value = savedTTSPitch;
+  var rateEl = document.getElementById('tts-rate');
+  if(rateEl) rateEl.value = savedTTSRate;
+  var oaiVoiceEl = document.getElementById('tts-openai-voice');
+  if(oaiVoiceEl) oaiVoiceEl.value = savedOpenAIVoice;
+
+  // Populate browser voices (async — voices may load late)
+  if(window.speechSynthesis) {
+    populateBrowserVoices();
+    window.speechSynthesis.onvoiceschanged = populateBrowserVoices;
+  }
 
   // Set date
-  document.getElementById('date-display').textContent = 'London, 4. Marz 1881 &mdash; Tag der Entdeckung';
+  document.getElementById('date-display').textContent = 'London, ' + (CASE.year || 1881);
 
-  // Start or resume
-  if(!G.caseStarted) {
-    if(savedKey) {
-      startCase();
-    } else {
-      addMsg('system', '', 'Bitte hinterlegen Sie Ihren OpenAI API-Schlüssel in den Einstellungen, um die Ermittlung zu beginnen.');
-      openSettings();
-    }
-  } else {
-    if(G.chatHistory.length > 0) {
-      addMsg('system', '', '— Ermittlung fortgesetzt. Bisher ' + G.leadsUsed + ' Schritte, ' + G.evidence.length + ' Beweise gesichert. —');
-      updateEvidenceBadge();
-    } else {
-      startCase();
-    }
-  }
+  // Splash screen handles case start — see hideSplash() and startFromSplash()
 
   // Titel im Masthead aktualisieren
   updateMastheadTitle();
 
   // Desktop two-column layout
   initDesktopLayout();
+
+  // Splash screen
+  renderSplash();
+  // Skip splash if already mid-game
+  if(G.caseStarted && G.chatHistory.length > 0) {
+    hideSplash();
+  }
+  // If case started but no history, show splash for case selection
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2899,6 +3111,250 @@ stopAllAudio = function() {
   document.getElementById('audio-btn').textContent = '\u25BA Musik';
   audioPlaying = false;
 };
+
+// ══════════════════════════════════════════════════════════════════
+//  SPLASH SCREEN
+// ══════════════════════════════════════════════════════════════════
+function renderSplash() {
+  var grid = document.getElementById('splash-case-grid');
+  if(!grid) return;
+  grid.innerHTML = CASE_REGISTRY.map(function(c) {
+    var isLocked = c.status === 'locked';
+    return '<button class="splash-case-btn' + (isLocked ? ' locked' : '') + '"' +
+      (!isLocked ? ' onclick="startFromSplash(\'' + c.id + '\')"' : '') + '>' +
+      '<div style="text-align:left">' +
+        '<div>' + escHtml(c.title) + '</div>' +
+        '<span class="splash-case-meta">' + c.type + (isLocked ? ' &mdash; In Arbeit' : '') + '</span>' +
+      '</div>' +
+      '<span class="splash-case-year">' + c.year + '</span>' +
+    '</button>';
+  }).join('');
+}
+
+function startFromSplash(caseId) {
+  // If different case, navigate
+  var currentId = CASE.id || 'study-in-scarlet';
+  if(caseId !== currentId) {
+    var url = new URL(location.href);
+    url.searchParams.set('case', caseId);
+    location.href = url.toString();
+    return;
+  }
+  hideSplash();
+}
+
+function updateTTSOptions(mode) {
+  var bOpts = document.getElementById('tts-browser-opts');
+  var oOpts = document.getElementById('tts-openai-opts');
+  if(bOpts) bOpts.style.display = mode === 'browser' ? 'block' : 'none';
+  if(oOpts) oOpts.style.display = mode === 'openai' ? 'block' : 'none';
+}
+
+function hideSplash() {
+  var splash = document.getElementById('splash');
+  if(splash) splash.classList.add('hidden');
+  var savedKey = localStorage.getItem('sh_openai_key');
+  if(!G.caseStarted) {
+    if(savedKey) {
+      startCase();
+    } else {
+      addMsg('system', '', 'Bitte hinterlegen Sie Ihren OpenAI API-Schlüssel in den Einstellungen, um die Ermittlung zu beginnen.');
+      openSettings();
+    }
+  } else if(G.chatHistory.length > 0) {
+    addMsg('system', '', '— Ermittlung fortgesetzt. Bisher ' + G.leadsUsed + ' Schritte, ' + G.evidence.length + ' Beweise gesichert. —');
+    updateEvidenceBadge();
+  } else {
+    startCase();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  TEXT-TO-SPEECH ENGINE
+// ══════════════════════════════════════════════════════════════════
+var ttsQueue = [];
+var ttsSpeaking = false;
+var ttsCurrentBtn = null;
+
+function getTTSMode() { return localStorage.getItem('sh_tts_mode') || 'off'; }
+function getTTSLang() { return localStorage.getItem('sh_lang') || 'de'; }
+
+// Populate browser voice selector in settings
+function populateBrowserVoices() {
+  var sel = document.getElementById('tts-voice-select');
+  if(!sel || !window.speechSynthesis) return;
+  var voices = window.speechSynthesis.getVoices();
+  var lang = getTTSLang() === 'en' ? 'en' : 'de';
+  sel.innerHTML = '<option value="">Automatisch (beste verfügbare)</option>';
+  voices
+    .filter(function(v) { return v.lang.startsWith(lang); })
+    .forEach(function(v) {
+      var opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = v.name + (v.default ? ' ★' : '');
+      sel.appendChild(opt);
+    });
+}
+
+// Pick best voice for language
+function getBestBrowserVoice(lang) {
+  if(!window.speechSynthesis) return null;
+  var voices = window.speechSynthesis.getVoices();
+  var savedVoice = localStorage.getItem('sh_tts_voice');
+  if(savedVoice) {
+    var found = voices.find(function(v){ return v.name === savedVoice; });
+    if(found) return found;
+  }
+  // Priority: Neural/Natural/Premium voices first
+  var langCode = lang === 'en' ? 'en' : 'de';
+  var preferred = voices.filter(function(v){
+    return v.lang.startsWith(langCode) &&
+      (v.name.includes('Natural') || v.name.includes('Neural') ||
+       v.name.includes('Premium') || v.name.includes('Enhanced') ||
+       v.name.includes('Microsoft') || v.name.includes('Google'));
+  });
+  if(preferred.length) return preferred[0];
+  var fallback = voices.filter(function(v){ return v.lang.startsWith(langCode); });
+  return fallback[0] || voices[0] || null;
+}
+
+// Strip markdown and markers from text for TTS
+function cleanTextForTTS(text) {
+  return text
+    .replace(/\[BEWEIS GESICHERT:[^\]]+\]/gi, '')
+    .replace(/\[SCHLUSSFOLGERUNG:[^\]]+\]/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/&ldquo;|&rdquo;/g, '"')
+    .replace(/&mdash;/g, '—')
+    .replace(/&middot;/g, '·')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Speak with browser TTS
+function speakBrowser(text, btn) {
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+
+  var lang = getTTSLang();
+  var voice = getBestBrowserVoice(lang);
+  var pitch = parseFloat(localStorage.getItem('sh_tts_pitch') || '0.8');
+  var rate = parseFloat(localStorage.getItem('sh_tts_rate') || '0.85');
+
+  var utt = new SpeechSynthesisUtterance(cleanTextForTTS(text));
+  utt.lang = lang === 'en' ? 'en-GB' : 'de-DE';
+  if(voice) utt.voice = voice;
+  utt.pitch = pitch;
+  utt.rate = rate;
+  utt.volume = 1;
+
+  if(btn) {
+    ttsCurrentBtn = btn;
+    btn.textContent = '⬛ Stop';
+    btn.classList.add('speaking');
+  }
+
+  utt.onend = function() {
+    if(ttsCurrentBtn) {
+      ttsCurrentBtn.textContent = '▶ Vorlesen';
+      ttsCurrentBtn.classList.remove('speaking');
+      ttsCurrentBtn = null;
+    }
+    ttsSpeaking = false;
+  };
+
+  ttsSpeaking = true;
+  window.speechSynthesis.speak(utt);
+}
+
+// Speak with OpenAI TTS
+async function speakOpenAI(text, btn) {
+  var key = localStorage.getItem('sh_openai_key');
+  if(!key) return;
+  var voice = localStorage.getItem('sh_tts_openai_voice') || 'onyx';
+
+  if(btn) {
+    btn.textContent = '⏳';
+    btn.disabled = true;
+  }
+
+  try {
+    var resp = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key
+      },
+      body: JSON.stringify({
+        model: 'tts-1',
+        input: cleanTextForTTS(text),
+        voice: voice,
+        speed: 0.9
+      })
+    });
+
+    if(!resp.ok) throw new Error('TTS API ' + resp.status);
+
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var audio = new Audio(url);
+
+    if(btn) {
+      ttsCurrentBtn = btn;
+      btn.textContent = '⬛ Stop';
+      btn.disabled = false;
+      btn.classList.add('speaking');
+      btn.onclick = function() {
+        audio.pause();
+        URL.revokeObjectURL(url);
+        btn.textContent = '▶ Vorlesen';
+        btn.classList.remove('speaking');
+        btn.onclick = function(){ speak(text, btn); };
+      };
+    }
+
+    audio.onended = function() {
+      URL.revokeObjectURL(url);
+      if(btn) {
+        btn.textContent = '▶ Vorlesen';
+        btn.classList.remove('speaking');
+        btn.onclick = function(){ speak(text, btn); };
+      }
+    };
+
+    ttsSpeaking = true;
+    audio.play();
+  } catch(e) {
+    if(btn) { btn.textContent = '▶ Vorlesen'; btn.disabled = false; }
+    console.warn('TTS error:', e);
+  }
+}
+
+// Unified speak function
+function speak(text, btn) {
+  // Stop any current speech
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+
+  var mode = getTTSMode();
+  if(mode === 'off') return;
+  if(mode === 'openai') {
+    speakOpenAI(text, btn);
+  } else {
+    speakBrowser(text, btn);
+  }
+}
+
+// Add TTS button to a message block
+function addTTSButton(block, text) {
+  if(getTTSMode() === 'off') return;
+  var btn = document.createElement('button');
+  btn.className = 'tts-btn';
+  btn.textContent = '▶ Vorlesen';
+  btn.onclick = function() { speak(text, btn); };
+  block.appendChild(btn);
+}
 
 window.addEventListener('load', init);
 </script>
