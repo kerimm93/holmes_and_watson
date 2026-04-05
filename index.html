@@ -261,6 +261,9 @@
     .panel.active { display: flex; }
 
     /* ── NARRATIVE PANEL ─────────────────────────────────────────── */
+    /* ── MAP BACKGROUND ─────────────────────────────────────────── */
+    /* Stanford Library Map of London, 1888 — public domain         */
+    /* Wikimedia Commons: Stanford_1888_LCC.jpg                     */
     #chat-area {
       flex: 1;
       overflow-y: auto;
@@ -270,12 +273,30 @@
       gap: 0;
       scrollbar-width: thin;
       scrollbar-color: var(--rule-light) transparent;
+      position: relative;
+
+      /* Map as background */
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Stanford_1888_LCC.jpg/1200px-Stanford_1888_LCC.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: local;
     }
 
-    /* Messages styled like typeset newspaper text */
+    /* Semi-transparent paper overlay so messages stay legible */
+    #chat-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(242, 234, 216, 0.82);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* All message blocks must sit above the overlay */
     .msg-block {
-      margin-bottom: 14px;
       position: relative;
+      z-index: 1;
+      margin-bottom: 14px;
     }
     .msg-speaker {
       font-family: var(--font-type);
@@ -2143,8 +2164,35 @@ function startCase() {
   addMsg('ai', 'Dr. Watson', opening);
 }
 
-function init() {
+// ══════════════════════════════════════════════════════════════════
+//  CASE LOADER — lädt CASE aus URL-Parameter oder nutzt eingebetteten
+//  Beispiel: ?case=scandal-in-bohemia → fetch('cases/scandal-in-bohemia.json')
+//  Kein Parameter → nutzt eingebettetes CASE-Objekt oben
+// ══════════════════════════════════════════════════════════════════
+async function loadCase() {
+  var caseId = new URLSearchParams(location.search).get('case');
+  if(!caseId) return; // nutze eingebettetes CASE
+
+  try {
+    var resp = await fetch('cases/' + caseId + '.json');
+    if(!resp.ok) throw new Error('Nicht gefunden');
+    var loaded = await resp.json();
+    // Überschreibe globales CASE
+    Object.keys(loaded).forEach(function(k){ CASE[k] = loaded[k]; });
+    document.title = loaded.title || document.title;
+    var titleEl = document.querySelector('.masthead-title');
+    if(titleEl && loaded.title) titleEl.textContent = loaded.title;
+    console.log('Fall geladen:', loaded.title);
+  } catch(e) {
+    console.warn('Case-Datei nicht gefunden, nutze eingebetteten Fall:', e.message);
+  }
+}
+
+async function init() {
   loadState();
+
+  // Lade externen Fall falls URL-Parameter vorhanden
+  await loadCase();
 
   // Render static content
   renderSuspects();
