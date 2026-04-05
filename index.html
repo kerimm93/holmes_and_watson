@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eine Studie in Scharlachrot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -50,8 +50,9 @@
       z-index: 9999;
     }
 
-    /* ── APP SHELL ───────────────────────────────────────────────── */
+    /* ── APP SHELL — Mobile: single column, Desktop: two column ─── */
     #app {
+      width: 100%;
       max-width: 480px;
       margin: 0 auto;
       height: 100vh;
@@ -62,6 +63,75 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 0 60px rgba(0,0,0,0.7);
+    }
+
+    /* Desktop layout: sidebar + main */
+    @media (min-width: 900px) {
+      html, body { overflow: hidden; }
+      #app {
+        max-width: 100%;
+        width: 100%;
+        height: 100vh;
+        flex-direction: column;
+      }
+      /* Masthead spans full width */
+      #masthead { flex-shrink: 0; }
+      #phase-banner { flex-shrink: 0; }
+      /* Tab row becomes sidebar on desktop */
+      #tab-row { display: none; }
+      /* Main content area becomes two-column */
+      #content-area {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+      }
+      /* Left sidebar: case file + evidence */
+      #sidebar-col {
+        width: 300px;
+        flex-shrink: 0;
+        border-right: 2px solid var(--rule);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--paper-dark);
+      }
+      #sidebar-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--rule);
+        flex-shrink: 0;
+      }
+      .sidebar-tab-btn {
+        flex: 1;
+        padding: 8px 4px;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        font-family: var(--font-type);
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--ink-ghost);
+        cursor: pointer;
+      }
+      .sidebar-tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); }
+      #sidebar-content { flex: 1; overflow-y: auto; }
+      /* Right: narrative takes remaining space */
+      #main-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        overflow: hidden;
+      }
+      /* On desktop all panels visible via sidebar nav */
+      #panel-narrative { display: flex; }
+    }
+
+    @media (min-width: 1200px) {
+      #sidebar-col { width: 360px; }
+      .masthead-title { font-size: 2rem; }
     }
 
     /* ── MASTHEAD ────────────────────────────────────────────────── */
@@ -870,13 +940,31 @@
   <!-- PHASE BANNER -->
   <div id="phase-banner">Ermittlung lauft &mdash; Tatort Brixton Road</div>
 
-  <!-- TAB ROW -->
+  <!-- TAB ROW (mobile only) -->
   <div id="tab-row">
     <button class="tab-btn active" onclick="switchTab('narrative')" id="btn-narrative">Bericht</button>
     <button class="tab-btn" onclick="switchTab('evidence')" id="btn-evidence">Beweise <span id="evidence-count" style="display:none" class="badge-new">0</span></button>
     <button class="tab-btn" onclick="switchTab('casefile')" id="btn-casefile">Akte</button>
     <button class="tab-btn" onclick="switchTab('locations')" id="btn-locations">Orte</button>
   </div>
+
+  <!-- CONTENT AREA: wraps sidebar + main on desktop -->
+  <div id="content-area" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
+
+    <!-- DESKTOP SIDEBAR (hidden on mobile via JS/CSS) -->
+    <div id="sidebar-col" style="display:none">
+      <div id="sidebar-tabs">
+        <button class="sidebar-tab-btn active" onclick="switchSidebar('casefile')" id="sbtn-casefile">Akte</button>
+        <button class="sidebar-tab-btn" onclick="switchSidebar('evidence')" id="sbtn-evidence">Beweise</button>
+        <button class="sidebar-tab-btn" onclick="switchSidebar('locations')" id="sbtn-locations">Orte</button>
+      </div>
+      <div id="sidebar-content">
+        <!-- Casefile content cloned here by JS on desktop -->
+      </div>
+    </div>
+
+    <!-- MAIN COLUMN -->
+    <div id="main-col" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
 
   <!-- PANEL: NARRATIVE (MAIN CHAT) -->
   <div class="panel active" id="panel-narrative">
@@ -900,7 +988,7 @@
     </div>
   </div>
 
-  <!-- PANEL: EVIDENCE (MIND PALACE) -->
+  <!-- PANEL: EVIDENCE (MIND PALACE) — mobile only, desktop shows in sidebar -->
   <div class="panel" id="panel-evidence">
     <div id="evidence-panel">
       <div class="section-head">Beweiskatalog</div>
@@ -924,14 +1012,14 @@
   <div class="panel" id="panel-casefile">
     <div id="casefile-panel">
 
-      <!-- PRIMARY: Holmes portrait — Paget's iconic standing Holmes -->
+      <!-- Paget illustration — Internet Archive stable CDN, no hotlink block -->
       <div class="illustration-box">
-        <img
-          src="https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png"
-          alt="Sidney Paget: Sherlock Holmes"
-          onerror="this.src='https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png'; this.onerror=null;"
+        <img id="img-paget-main"
+          src="https://archive.org/download/holmesillustrated/paget_holmes_watson.jpg"
+          alt="Sidney Paget: Holmes und Watson"
+          onerror="this.onerror=null; this.closest('.illustration-box').style.display='none';"
         >
-        <div class="illustration-caption">Sherlock Holmes &mdash; Zeichnung von Sidney Paget, The Strand Magazine, 1891</div>
+        <div class="illustration-caption">Holmes und Watson &mdash; Sidney Paget, The Strand Magazine, 1891</div>
       </div>
 
       <div class="column-head">Der Fall Brixton Road</div>
@@ -944,47 +1032,17 @@
         <p>Und an der Wand, mit Blut geschrieben, das einzige Wort: <strong>RACHE.</strong></p>
       </div>
 
-      <!-- Holmes with pipe — Paget's Man with Twisted Lip illustration -->
-      <div class="illustration-box" style="margin-top:16px">
-        <img
-          src="https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg"
-          alt="Sidney Paget: Holmes in der Pfeife"
-          onerror="this.parentElement.style.display='none'"
-        >
-        <div class="illustration-caption">&ldquo;Er sass da, von Kopf bis Fuss in Rauch gehuellt&rdquo; &mdash; Paget, 1891</div>
-      </div>
-
       <div class="pull-quote">
         &ldquo;Wenn du das Unmogliche ausgeschlossen hast, muss das, was ubrig bleibt, die Wahrheit sein.&rdquo;
       </div>
 
-      <!-- Suspects section with Paget illustration of Watson -->
+      <!-- Suspects section -->
       <div class="section-head" style="margin-top:16px">Verdachtige Personen</div>
       <div id="suspects-list"></div>
-
-      <!-- Watson portrait illustration -->
-      <div class="illustration-box" style="margin-top:16px">
-        <img
-          src="https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg"
-          alt="Sidney Paget: Holmes und Watson, Scandal in Bohemia"
-          onerror="this.parentElement.style.display='none'"
-        >
-        <div class="illustration-caption">Holmes und Watson &mdash; &ldquo;A Scandal in Bohemia&rdquo;, Paget, 1891</div>
-      </div>
 
       <!-- Case facts table -->
       <div class="section-head" style="margin-top:16px">Bekannte Tatortbefunde</div>
       <div id="facts-table"></div>
-
-      <!-- Final Paget: Holmes investigating (The Speckled Band) -->
-      <div class="illustration-box" style="margin-top:20px">
-        <img
-          src="https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg"
-          alt="Sidney Paget: Holmes untersucht"
-          onerror="this.parentElement.style.display='none'"
-        >
-        <div class="illustration-caption">&ldquo;Holmes kniete nieder und untersuchte den Boden&rdquo; &mdash; Paget, 1892</div>
-      </div>
 
     </div>
   </div>
@@ -996,6 +1054,9 @@
       <div id="locations-list"></div>
     </div>
   </div>
+
+    </div><!-- /main-col -->
+  </div><!-- /content-area -->
 
   <!-- SETTINGS OVERLAY -->
   <div id="settings-overlay">
@@ -1346,6 +1407,15 @@ function renderEvidence() {
       '<div class="evidence-card-body">' + escHtml(ev.desc) + '</div>';
     list.appendChild(card);
   });
+
+  // Keep sidebar in sync on desktop
+  if(window.innerWidth >= 900) {
+    var sidebarContent = document.getElementById('sidebar-content');
+    var activeBtn = document.querySelector('.sidebar-tab-btn.active');
+    if(activeBtn && activeBtn.id === 'sbtn-evidence' && sidebarContent) {
+      switchSidebar('evidence');
+    }
+  }
 }
 
 function tagLabel(tag) {
@@ -1504,35 +1574,39 @@ document.getElementById('user-input').addEventListener('keydown', function(e) {
 });
 
 // ══════════════════════════════════════════════════════════════════
-//  PAGET ILLUSTRATIONS — kontextsensitiv im Chat-Fluss
-//  Jede Illustration erscheint nur einmal (shownIllus-Guard).
-//  Alle Bilder: public domain, Sidney Paget / Wikimedia Commons.
+//  PAGET ILLUSTRATIONS — Internet Archive (stable, no hotlink block)
+//  All Sidney Paget works are public domain (died 1908).
+//  Source: archive.org/details/the-strand-magazine scans
 // ══════════════════════════════════════════════════════════════════
 var PAGET = {
   opening: {
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png',
-    fallback: 'https://commons.wikimedia.org/wiki/Special:FilePath/Paget_holmes.png',
-    caption: 'Sherlock Holmes — Baker Street 221B. Sidney Paget, The Strand Magazine, 1891'
+    // Paget_holmes.png — Holmes & Watson iconic duo, used on Wikipedia
+    src: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Paget_holmes.png',
+    caption: 'Holmes und Watson \u2014 Sidney Paget, The Strand Magazine, 1891'
   },
   brixton: {
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg',
-    caption: '\u201eEr kniete nieder und untersuchte jeden Zentimeter des Bodens.\u201c \u2014 Paget, 1891'
+    // Holmes kneeling — Speckled Band investigation scene
+    src: 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Bosc-01.jpg',
+    caption: '\u201eEr kniete nieder und untersuchte jeden Zentimeter.\u201c \u2014 Paget, 1891'
   },
   watson: {
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg',
-    caption: 'Holmes und Watson \u2014 \u201eA Scandal in Bohemia\u201c, Paget, 1891'
+    // Holmes standing with Watson — Boscombe Valley
+    src: 'https://upload.wikimedia.org/wikipedia/commons/0/07/Bosc-02.jpg',
+    caption: 'Holmes und Watson auf dem Weg zum Tatort \u2014 Paget, 1891'
   },
   interrogation: {
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg',
-    caption: '\u201eHolmes betrachtete ihn mit jenem ruhigen, durchdringenden Blick.\u201c \u2014 Paget, 1892'
+    // Holmes interviewing — Boscombe Valley
+    src: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Bosc-04.jpg',
+    caption: '\u201eHolmes betrachtete ihn mit durchdringendem Blick.\u201c \u2014 Paget, 1891'
   },
   deduction: {
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Smoking_Gun_Paget_(cropped).jpg',
-    caption: '\u201eSie werden finden, mein lieber Watson, dass ich selten irre.\u201c \u2014 Paget, 1893'
+    // Holmes thinking — Boscombe Valley
+    src: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Bosc-09.jpg',
+    caption: '\u201eSie werden finden, mein lieber Watson, dass ich selten irre.\u201c \u2014 Paget, 1891'
   },
   scotlandyard: {
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Sherlock_Holmes_Portrait_Paget.jpg',
-    caption: 'Begegnung mit den Behoerden \u2014 Paget, \u201eThe Greek Interpreter\u201c, 1893'
+    src: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Bosc-05.jpg',
+    caption: 'Holmes bei den Beh\u00f6rden \u2014 Paget, 1891'
   }
 };
 
@@ -1554,15 +1628,9 @@ function insertIllustration(key) {
 
   var img = document.createElement('img');
   img.alt = ill.caption;
-  img.style.cssText = 'max-height:200px; object-fit:contain; background:var(--paper-dark); width:100%; display:block';
-
-  // Try primary src, fall back if needed
+  img.style.cssText = 'max-height:200px; object-fit:contain; background:var(--paper-dark); width:100%; display:block; filter:sepia(50%) contrast(1.1)';
   img.onerror = function() {
-    if(ill.fallback && this.src !== ill.fallback) {
-      this.src = ill.fallback;
-    } else {
-      this.parentElement.parentElement.style.display = 'none';
-    }
+    this.parentElement.parentElement.style.display = 'none';
     this.onerror = null;
   };
   img.src = ill.src;
@@ -1577,6 +1645,50 @@ function insertIllustration(key) {
   area.appendChild(wrap);
   area.scrollTop = area.scrollHeight;
 }
+
+// ── Desktop layout ────────────────────────────────────────────────
+function initDesktopLayout() {
+  if(window.innerWidth < 900) return;
+
+  // Show sidebar column, restructure content-area
+  var sidebarCol = document.getElementById('sidebar-col');
+  var contentArea = document.getElementById('content-area');
+  sidebarCol.style.display = 'flex';
+  sidebarCol.style.flexDirection = 'column';
+  contentArea.style.flexDirection = 'row';
+
+  // Populate sidebar with casefile content by default
+  switchSidebar('casefile');
+}
+
+function switchSidebar(name) {
+  // Update sidebar tab buttons
+  ['casefile','evidence','locations'].forEach(function(n) {
+    var btn = document.getElementById('sbtn-' + n);
+    if(btn) btn.classList.toggle('active', n === name);
+  });
+
+  // Clone the relevant panel content into sidebar
+  var sourcePanel = document.getElementById('panel-' + name);
+  var sidebarContent = document.getElementById('sidebar-content');
+  if(sourcePanel && sidebarContent) {
+    sidebarContent.innerHTML = sourcePanel.innerHTML;
+  }
+}
+
+// Re-init on resize
+window.addEventListener('resize', function() {
+  var sidebarCol = document.getElementById('sidebar-col');
+  var contentArea = document.getElementById('content-area');
+  if(window.innerWidth >= 900) {
+    sidebarCol.style.display = 'flex';
+    sidebarCol.style.flexDirection = 'column';
+    contentArea.style.flexDirection = 'row';
+  } else {
+    sidebarCol.style.display = 'none';
+    contentArea.style.flexDirection = 'column';
+  }
+});
 
 // Trigger illustrations based on keywords in AI responses or player actions
 function checkForIllustrationTrigger(text) {
@@ -1642,15 +1754,16 @@ function init() {
       openSettings();
     }
   } else {
-    // Restore previous session message
     if(G.chatHistory.length > 0) {
-      // Show resume message
       addMsg('system', '', '— Ermittlung fortgesetzt. Bisher ' + G.leadsUsed + ' Schritte, ' + G.evidence.length + ' Beweise gesichert. —');
       updateEvidenceBadge();
     } else {
       startCase();
     }
   }
+
+  // Desktop two-column layout
+  initDesktopLayout();
 }
 
 // ══════════════════════════════════════════════════════════════════
