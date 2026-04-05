@@ -262,8 +262,7 @@
 
     /* ── NARRATIVE PANEL ─────────────────────────────────────────── */
     /* ── MAP BACKGROUND ─────────────────────────────────────────── */
-    /* Stanford Library Map of London, 1888 — public domain         */
-    /* Wikimedia Commons: Stanford_1888_LCC.jpg                     */
+    /* Bacon's Large Scale Atlas of London, 1888 — public domain     */
     #chat-area {
       flex: 1;
       overflow-y: auto;
@@ -274,9 +273,8 @@
       scrollbar-width: thin;
       scrollbar-color: var(--rule-light) transparent;
       position: relative;
-
-      /* Map as background */
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Stanford_1888_LCC.jpg/1200px-Stanford_1888_LCC.jpg');
+      background-color: var(--paper);
+      background-image: url('https://www.davidrumsey.com/luna/servlet/iiif/RUMSEY~8~1~286665~90059374/full/1200,/0/default.jpg');
       background-size: cover;
       background-position: center center;
       background-attachment: local;
@@ -287,7 +285,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(242, 234, 216, 0.82);
+      background: rgba(242, 234, 216, 0.84);
       pointer-events: none;
       z-index: 0;
     }
@@ -298,6 +296,133 @@
       z-index: 1;
       margin-bottom: 14px;
     }
+
+    /* ── CASE SELECTOR OVERLAY ───────────────────────────────────── */
+    #case-selector {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(28,21,16,0.92);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    #case-selector.open { display: flex; }
+    .case-selector-box {
+      background: var(--paper);
+      border: 2px solid var(--rule);
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+    }
+    .case-selector-head {
+      background: var(--ink);
+      color: var(--paper-aged);
+      padding: 14px 18px;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-style: italic;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+    .case-selector-body { padding: 16px; }
+    .case-entry {
+      border: 1px solid var(--rule-light);
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      gap: 0;
+      transition: border-color 0.12s;
+      overflow: hidden;
+    }
+    .case-entry:hover { border-color: var(--rule); }
+    .case-entry-year {
+      background: var(--ink);
+      color: var(--paper-aged);
+      font-family: var(--font-type);
+      font-size: 9px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      padding: 8px 5px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .case-entry-info { padding: 10px 12px; flex: 1; }
+    .case-entry-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--ink);
+    }
+    .case-entry-meta {
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--ink-ghost);
+      margin-top: 3px;
+    }
+    .case-entry-status {
+      font-family: var(--font-type);
+      font-size: 8px;
+      padding: 2px 6px;
+      border: 1px solid;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .status-active { color: var(--verdigris); border-color: var(--verdigris); }
+    .status-available { color: var(--ink-ghost); border-color: var(--ink-ghost); }
+    .status-locked { color: var(--blood); border-color: var(--blood); opacity: 0.5; }
+
+    /* ── MUSIC OVERLAY ───────────────────────────────────────────── */
+    #music-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(28,21,16,0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #music-overlay.open { display: flex; }
+    .music-box {
+      background: var(--paper);
+      border: 2px solid var(--rule);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.4);
+    }
+    .music-box-head {
+      background: var(--ink);
+      color: var(--paper-aged);
+      padding: 12px 16px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-style: italic;
+      font-weight: 700;
+    }
+    .music-box-body { padding: 14px 16px; }
+    .music-section-label {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-faded);
+      margin-bottom: 6px;
+      margin-top: 14px;
+      display: block;
+      border-bottom: 1px solid var(--rule-light);
+      padding-bottom: 4px;
+    }
+    .music-section-label:first-child { margin-top: 0; }
     .msg-speaker {
       font-family: var(--font-type);
       font-size: 8px;
@@ -935,26 +1060,19 @@
   <!-- MASTHEAD -->
   <header id="masthead">
     <div class="masthead-top">
-      <span class="masthead-dateline" id="date-display">London, 4. März 1881</span>
-      <div style="display:flex;gap:6px;align-items:center">
-        <button class="masthead-settings-btn" id="audio-btn" onclick="toggleAudio()" title="Atmosphärische Musik">&#9654; Musik</button>
+      <span class="masthead-dateline" id="date-display">London, 1881</span>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <button class="masthead-settings-btn" onclick="openCaseSelector()">&#9776; F&auml;lle</button>
+        <button class="masthead-settings-btn" id="audio-btn" onclick="openMusicOverlay()">&#9654; Musik</button>
         <button class="masthead-settings-btn" onclick="openSettings()">Einstellungen</button>
       </div>
     </div>
-
-    <!-- Audio track selector — appears when playing -->
-    <div id="audio-bar" style="display:none; padding:4px 14px 0; gap:4px; flex-wrap:wrap;">
-      <button class="audio-track-btn active" onclick="setTrack(0)" data-track="0">I &middot; Kaminfeuer</button>
-      <button class="audio-track-btn" onclick="setTrack(1)" data-track="1">II &middot; Londoner Regen</button>
-      <button class="audio-track-btn" onclick="setTrack(2)" data-track="2">III &middot; Baker Street</button>
-    </div>
-
     <div class="masthead-title-block">
-      <span class="masthead-kicker">Ein Watson-Bericht &middot; Baker Street &middot; Bd. I</span>
-      <div class="masthead-title">Eine Studie in Scharlachrot</div>
+      <span class="masthead-kicker" id="masthead-kicker">Ein Watson-Bericht &middot; Baker Street</span>
+      <div class="masthead-title" id="masthead-title">Eine Studie in Scharlachrot</div>
     </div>
     <div class="masthead-rule-ornament">
-      <span class="ornament-text">Das Spiel ist im Gange</span>
+      <span class="ornament-text" id="masthead-ornament">Das Spiel ist im Gange</span>
     </div>
   </header>
 
@@ -1122,6 +1240,78 @@
           <button class="btn-primary" onclick="submitVerdict()">Anklage vortragen</button>
           <button class="btn-secondary" onclick="closeVerdict()">Noch nicht bereit</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIDDEN FILE INPUT for local audio -->
+  <input type="file" id="local-audio-file" accept="audio/*" style="display:none" onchange="loadLocalAudio(this)">
+
+  <!-- CASE SELECTOR OVERLAY -->
+  <div id="case-selector">
+    <div class="case-selector-box">
+      <div class="case-selector-head">Aktenfach — F&auml;lle ausw&auml;hlen</div>
+      <div class="case-selector-body" id="case-list">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MUSIC OVERLAY -->
+  <div id="music-overlay">
+    <div class="music-box">
+      <div class="music-box-head">Atmosph&auml;rische Begleitung</div>
+      <div class="music-box-body">
+
+        <span class="music-section-label">Prozeduraler Klang (offline)</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+          <button class="audio-track-btn active" onclick="setProceduralTrack(0)" data-track="0">I &middot; Kaminfeuer</button>
+          <button class="audio-track-btn" onclick="setProceduralTrack(1)" data-track="1">II &middot; Regen</button>
+          <button class="audio-track-btn" onclick="setProceduralTrack(2)" data-track="2">III &middot; Baker Street</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-primary" style="flex:1;font-size:10px;padding:7px" onclick="startProceduralAudio()">&#9654; Starten</button>
+          <button class="btn-secondary" style="flex:1;font-size:10px;padding:7px" onclick="stopAllAudio()">&#9632; Stop</button>
+        </div>
+
+        <span class="music-section-label">YouTube-Link (ohne Cookie-Tracking)</span>
+        <div style="font-family:var(--font-type);font-size:9px;color:var(--ink-ghost);margin-bottom:6px;line-height:1.5">
+          youtube.com/watch?v=... oder youtu.be/... einf&uuml;gen.<br>
+          Nutzt youtube-nocookie.com — weniger Werbung, kein Tracking.
+        </div>
+        <input type="text" class="settings-input" id="yt-url-input"
+          placeholder="https://www.youtube.com/watch?v=..."
+          style="margin-bottom:8px">
+        <button class="btn-primary" style="width:100%;font-size:10px;padding:8px" onclick="loadYouTubeUrl()">YouTube laden</button>
+        <div id="yt-player-wrap" style="display:none;margin-top:10px;border:1px solid var(--rule-light)">
+          <iframe id="yt-iframe" width="100%" height="60"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+            style="display:block"></iframe>
+        </div>
+
+        <span class="music-section-label">Lokale Audiodatei (MP3, OGG, WAV)</span>
+        <div style="font-family:var(--font-type);font-size:9px;color:var(--ink-ghost);margin-bottom:6px;line-height:1.5">
+          Datei bleibt lokal — wird nicht hochgeladen.
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-secondary" style="flex:1;font-size:10px;padding:7px"
+            onclick="document.getElementById('local-audio-file').click()">
+            &#128190; Datei w&auml;hlen
+          </button>
+          <button class="btn-secondary" style="flex:1;font-size:10px;padding:7px" id="local-stop-btn"
+            onclick="stopLocalAudio()" style="display:none">
+            &#9632; Stop
+          </button>
+        </div>
+        <div id="local-audio-name" style="font-family:var(--font-type);font-size:9px;color:var(--ink-ghost);margin-top:4px"></div>
+        <audio id="local-audio-player" loop style="display:none"></audio>
+
+        <div style="margin-top:16px;display:flex;gap:6px">
+          <button class="btn-primary" style="flex:1;font-size:10px;padding:8px" onclick="closeMusicOverlay()">Schlie&szlig;en</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2227,6 +2417,9 @@ async function init() {
     }
   }
 
+  // Titel im Masthead aktualisieren
+  updateMastheadTitle();
+
   // Desktop two-column layout
   initDesktopLayout();
 }
@@ -2491,6 +2684,221 @@ function setTrack(idx) {
   });
   if(audioPlaying) startTrack(idx);
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  CASE SELECTOR
+// ══════════════════════════════════════════════════════════════════
+
+// Registry bekannter Fälle — wird durch cases/-Ordner erweitert
+var CASE_REGISTRY = [
+  {
+    id: 'study-in-scarlet',
+    title: 'Eine Studie in Scharlachrot',
+    year: 1881,
+    type: 'Roman',
+    status: 'active'   // active = eingebettet & spielbar
+  },
+  {
+    id: 'scandal-in-bohemia',
+    title: 'Ein Skandal in Böhmen',
+    year: 1891,
+    type: 'Kurzgeschichte',
+    status: 'available'  // available = JSON-Datei in cases/
+  },
+  {
+    id: 'speckled-band',
+    title: 'Das gefleckte Band',
+    year: 1892,
+    type: 'Kurzgeschichte',
+    status: 'available'
+  },
+  {
+    id: 'red-headed-league',
+    title: 'Der Bund der Rothaarigen',
+    year: 1891,
+    type: 'Kurzgeschichte',
+    status: 'locked'   // locked = noch nicht kodiert
+  },
+  {
+    id: 'hound-of-baskervilles',
+    title: 'Der Hund der Baskervilles',
+    year: 1902,
+    type: 'Roman',
+    status: 'locked'
+  }
+];
+
+function openCaseSelector() {
+  renderCaseList();
+  document.getElementById('case-selector').classList.add('open');
+}
+function closeCaseSelector() {
+  document.getElementById('case-selector').classList.remove('open');
+}
+
+function renderCaseList() {
+  var list = document.getElementById('case-list');
+  var statusLabel = { active: 'Aktiv', available: 'Verfügbar', locked: 'In Arbeit' };
+
+  list.innerHTML = CASE_REGISTRY.map(function(c) {
+    var isLocked = c.status === 'locked';
+    var isActive = c.id === (CASE.id || 'study-in-scarlet');
+    return '<div class="case-entry' + (isLocked ? '" style="cursor:not-allowed' : '') + '"' +
+      (!isLocked ? ' onclick="selectCase(\'' + c.id + '\')"' : '') + '>' +
+      '<div class="case-entry-year">' + c.year + '</div>' +
+      '<div class="case-entry-info">' +
+        '<div class="case-entry-title">' + escHtml(c.title) + '</div>' +
+        '<div class="case-entry-meta">' + c.type + '</div>' +
+        '<span class="case-entry-status status-' + (isActive ? 'active' : c.status) + '">' +
+          (isActive ? '● Aktuell' : statusLabel[c.status]) +
+        '</span>' +
+      '</div></div>';
+  }).join('') +
+  '<div style="margin-top:12px;display:flex;gap:8px">' +
+  '<button class="btn-secondary" style="flex:1;font-size:10px;padding:8px" onclick="closeCaseSelector()">Abbrechen</button>' +
+  '</div>';
+}
+
+function selectCase(caseId) {
+  closeCaseSelector();
+  if(caseId === (CASE.id || 'study-in-scarlet')) return;
+
+  // Navigiere zu ?case=caseId — lädt neuen Fall
+  var url = new URL(location.href);
+  url.searchParams.set('case', caseId);
+  location.href = url.toString();
+}
+
+// Titel im Masthead dynamisch setzen
+function updateMastheadTitle() {
+  var titleEl = document.getElementById('masthead-title');
+  var kickerEl = document.getElementById('masthead-kicker');
+  var ornamentEl = document.getElementById('masthead-ornament');
+  if(titleEl && CASE.title) titleEl.textContent = CASE.title;
+  if(kickerEl && CASE.year) kickerEl.textContent =
+    'Ein Watson-Bericht \u00b7 Baker Street \u00b7 ' + CASE.year;
+  if(ornamentEl) ornamentEl.textContent = 'Das Spiel ist im Gange';
+  document.title = CASE.title || 'Sherlock Holmes RPG';
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MUSIC OVERLAY — YouTube nocookie + lokale Datei
+// ══════════════════════════════════════════════════════════════════
+
+function openMusicOverlay() {
+  document.getElementById('music-overlay').classList.add('open');
+}
+function closeMusicOverlay() {
+  document.getElementById('music-overlay').classList.remove('open');
+}
+
+// Extrahiert YouTube-Video-ID aus beliebigen URL-Formaten
+function extractYouTubeId(url) {
+  url = url.trim();
+  var patterns = [
+    /[?&]v=([a-zA-Z0-9_-]{11})/,       // watch?v=
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,  // youtu.be/
+    /embed\/([a-zA-Z0-9_-]{11})/,      // embed/
+    /^([a-zA-Z0-9_-]{11})$/            // direkte ID
+  ];
+  for(var i = 0; i < patterns.length; i++) {
+    var m = url.match(patterns[i]);
+    if(m) return m[1];
+  }
+  return null;
+}
+
+function loadYouTubeUrl() {
+  var input = document.getElementById('yt-url-input').value.trim();
+  var videoId = extractYouTubeId(input);
+  if(!videoId) {
+    alert('Keine gültige YouTube-URL erkannt. Bitte youtube.com/watch?v=... oder youtu.be/... eingeben.');
+    return;
+  }
+
+  // Stoppe alles andere
+  stopAllAudio();
+  stopLocalAudio();
+
+  // youtube-nocookie.com = datenschutzkonformer Embed, weniger Werbung
+  var src = 'https://www.youtube-nocookie.com/embed/' + videoId +
+    '?autoplay=1&loop=1&playlist=' + videoId + '&controls=1&rel=0&modestbranding=1';
+
+  var wrap = document.getElementById('yt-player-wrap');
+  var iframe = document.getElementById('yt-iframe');
+  iframe.src = src;
+  wrap.style.display = 'block';
+
+  document.getElementById('audio-btn').textContent = '\u25A0 Musik';
+  audioPlaying = true;
+}
+
+// Lokale Audiodatei laden
+var localAudioUrl = null;
+function loadLocalAudio(input) {
+  if(!input.files || !input.files[0]) return;
+  var file = input.files[0];
+
+  // Stoppe alles andere
+  stopAllAudio();
+  var ytWrap = document.getElementById('yt-player-wrap');
+  var ytIframe = document.getElementById('yt-iframe');
+  if(ytWrap) { ytWrap.style.display = 'none'; ytIframe.src = ''; }
+
+  if(localAudioUrl) URL.revokeObjectURL(localAudioUrl);
+  localAudioUrl = URL.createObjectURL(file);
+
+  var player = document.getElementById('local-audio-player');
+  player.src = localAudioUrl;
+  player.play();
+
+  document.getElementById('local-audio-name').textContent =
+    '\u266b ' + file.name;
+  document.getElementById('local-stop-btn').style.display = 'inline-block';
+  document.getElementById('audio-btn').textContent = '\u25A0 Musik';
+  audioPlaying = true;
+}
+
+function stopLocalAudio() {
+  var player = document.getElementById('local-audio-player');
+  player.pause();
+  player.src = '';
+  document.getElementById('local-audio-name').textContent = '';
+  document.getElementById('local-stop-btn').style.display = 'none';
+}
+
+// Prozeduraler Track-Button (aus der alten Schnellleiste, jetzt im Overlay)
+function setProceduralTrack(idx) {
+  currentTrack = idx;
+  document.querySelectorAll('.audio-track-btn').forEach(function(b) {
+    b.classList.toggle('active', parseInt(b.dataset.track) === idx);
+  });
+}
+
+function startProceduralAudio() {
+  // Stoppe YouTube und lokale Datei zuerst
+  var ytIframe = document.getElementById('yt-iframe');
+  if(ytIframe) { ytIframe.src = ''; document.getElementById('yt-player-wrap').style.display = 'none'; }
+  stopLocalAudio();
+
+  if(!audioPlaying) {
+    startTrack(currentTrack);
+    document.getElementById('audio-btn').textContent = '\u25A0 Musik';
+    audioPlaying = true;
+  }
+}
+
+// Überschreibe stopAllAudio um auch YouTube zu stoppen
+var _origStopAll = stopAllAudio;
+stopAllAudio = function() {
+  _origStopAll();
+  var ytIframe = document.getElementById('yt-iframe');
+  if(ytIframe && ytIframe.src) { ytIframe.src = ''; }
+  var ytWrap = document.getElementById('yt-player-wrap');
+  if(ytWrap) ytWrap.style.display = 'none';
+  document.getElementById('audio-btn').textContent = '\u25BA Musik';
+  audioPlaying = false;
+};
 
 window.addEventListener('load', init);
 </script>
