@@ -971,8 +971,9 @@
     <div class="quick-actions" id="quick-actions">
       <button class="quick-btn" onclick="quickAction('Untersuche den Raum')">Raum untersuchen</button>
       <button class="quick-btn" onclick="quickAction('Befrage Watson')">Watson befragen</button>
-      <button class="quick-btn" onclick="quickAction('Sicherungsbeweis analysieren')">Beweise sichten</button>
       <button class="quick-btn" onclick="quickAction('Was sind Ihre Schlussfolgerungen, Holmes?')">Schlussfolgerung</button>
+      <button class="quick-btn" onclick="requestWatsonHint()" title="Watson gibt einen subtilen Hinweis (+1 Hint)">&#9658; Watson-Hint</button>
+      <button class="quick-btn" onclick="callIrregulars()" title="Wiggins bringt eine konkrete Information (+2 Hints)">&#9658; Irregulars</button>
       <button class="quick-btn" onclick="openVerdict()">Anklage erheben</button>
     </div>
     <div id="chat-area"></div>
@@ -1113,72 +1114,229 @@
 //  Ground Truth JSON. The LLM may only narrate; it cannot alter
 //  these facts. This is the "locked" canonical source.
 // ══════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════
+//  CASE DATA — "Eine Studie in Scharlachrot"
+//
+//  ARCHITEKTUR-HINWEIS:
+//  Dieses Objekt ist die einzige Stelle die pro Fall angepasst wird.
+//  Für neue Fälle: neues CASE-Objekt definieren (oder per fetch()
+//  aus cases/fall-name.json laden) und App-Code bleibt identisch.
+//
+//  BEWEIS-TRIGGER-TYPEN:
+//  "inspect"  — Spieler muss aktiv untersuchen (allgemeine Wörter)
+//  "specific" — Spieler braucht sehr gezielte Handlung (seltene Keywords)
+//  "talk"     — Gespräch mit NPC erforderlich
+//  "combine"  — erst nach Kombination zweier anderer Beweise verfügbar
+// ══════════════════════════════════════════════════════════════════
 var CASE = {
+  id: "study-in-scarlet",
   title: "Eine Studie in Scharlachrot",
   year: 1881,
+
   victim: {
     name: "Enoch J. Drebber",
     nationality: "Amerikanisch (aus Utah)",
-    description: "Wohlhabender Mann, ca. 50 Jahre, stattliche Gestalt, sorgfaltig gekleidet",
+    description: "Wohlhabender Mann, ca. 50 Jahre, stattliche Gestalt, sorgfältig gekleidet",
     foundAt: "3 Lauriston Gardens, Brixton Road",
     causeOfDeath: "Vergiftung (unbekanntes Gift)"
   },
+
   secondVictim: {
     name: "Joseph Stangerson",
-    role: "Drebbers Sekretar",
+    role: "Drebbers Sekretär",
     foundAt: "Halliday's Private Hotel",
     causeOfDeath: "Stichverletzung"
   },
+
   evidence: [
-    { id: "e1", tag: "physical", title: "Blutspuren ohne Wunde", desc: "Reichlich Blut im Zimmer, das nicht vom Opfer stammt. Der Tater hatte Nasenbluten aus Aufregung.", found: false },
-    { id: "e2", tag: "physical", title: "Schrift: RACHE", desc: "In deutschem Stil mit Blut an die Wand geschrieben. Nicht 'Rachel', sondern das deutsche Wort fur Rache.", found: false },
-    { id: "e3", tag: "physical", title: "Goldener Ehering", desc: "Ein Damenring, aufgefunden beim Bewegen der Leiche. Verbindung zu einer Frau aus dem Leben des Taters.", found: false },
-    { id: "e4", tag: "physical", title: "Zigarre: Trichinopoly", desc: "Asche einer langen Trichinopoly-Zigarre am Tatort. Markiert den Aufenthaltsort des Taters.", found: false },
-    { id: "e5", tag: "physical", title: "Kutschspuren im Schlamm", desc: "Vier-rades Gefahr, ein Pferd mit drei neuen und einem alten Hufeisen.", found: false },
-    { id: "e6", tag: "physical", title: "Fussspuren im Gartenweg", desc: "Fussstapfen deuten auf einen Mann von uber sechs Fuss Grosse, in quadratischen Stiefeln.", found: false },
-    { id: "e7", tag: "document", title: "Pillenschachtel (zwei Pillen)", desc: "Gefunden im Zimmer Stangersons. Eine harmlose, eine todliche Pille. Der Tater spielte Gott.", found: false },
-    { id: "e8", tag: "testimony", title: "Aussage: Charpentier-Streit", desc: "Arthur Charpentier (Marineleutnant) stritt mit Drebber. Seine Schwester Alice wurde von Drebber bestatigt.", found: false },
-    { id: "e9", tag: "testimony", title: "Telegramm aus Cleveland", desc: "Bestatigt, dass ein 'J.H.' in Europa unterwegs ist. Initialen stimmen mit Stangersons Notizen uberein.", found: false },
-    { id: "e10", tag: "physical", title: "Kutscherkennzeichnung", desc: "Cab-Nr. 2704, Fahrer: Jefferson Hope. Durch Baker Street Irregulars ermittelt.", found: false }
+    {
+      id: "e1", tag: "physical",
+      title: "Blutspuren ohne Wunde",
+      desc: "Reichlich Blut im Zimmer, das nicht vom Opfer stammt. Der Täter hatte Nasenbluten aus Aufregung.",
+      location: "l2",
+      trigger: "inspect",
+      keywords: ["blut","boden","spuren","untersuche","schau","boden","zimmer","knie"],
+      watson_hint: "Der Boden des Zimmers verrät mehr als die Wände, Holmes.",
+      found: false
+    },
+    {
+      id: "e2", tag: "physical",
+      title: "Schrift: RACHE",
+      desc: "In deutschem Stil mit Blut an die Wand geschrieben. Nicht 'Rachel', sondern das deutsche Wort für Rache.",
+      location: "l2",
+      trigger: "inspect",
+      keywords: ["wand","schrift","buchstaben","rache","rachel","wort","schreib"],
+      watson_hint: "Die Inschrift an der Wand verdient Ihre volle Aufmerksamkeit.",
+      found: false
+    },
+    {
+      id: "e3", tag: "physical",
+      title: "Goldener Ehering",
+      desc: "Ein Damenring, aufgefunden beim Bewegen der Leiche. Verbindung zu einer Frau aus dem Leben des Täters.",
+      location: "l2",
+      trigger: "specific",
+      keywords: ["leiche","bewege","tasche","durchsuche","ring","kleidung","körper","rocktasche"],
+      watson_hint: null,
+      found: false
+    },
+    {
+      id: "e4", tag: "physical",
+      title: "Zigarre: Trichinopoly",
+      desc: "Asche einer langen Trichinopoly-Zigarre am Tatort. Markiert den Aufenthaltsort des Täters.",
+      location: "l2",
+      trigger: "inspect",
+      keywords: ["asche","zigarre","rauch","zigarette","boden","ecke"],
+      watson_hint: "Raucher hinterlassen stets Spuren, Holmes.",
+      found: false
+    },
+    {
+      id: "e5", tag: "physical",
+      title: "Kutschspuren im Schlamm",
+      desc: "Vierrädriges Gefährt, ein Pferd mit drei neuen und einem alten Hufeisen.",
+      location: "l2",
+      trigger: "inspect",
+      keywords: ["außen","garten","straße","schlamm","spuren","rad","kutsch","pferd","huf"],
+      watson_hint: "Der Weg vor dem Haus erzählt seine eigene Geschichte.",
+      found: false
+    },
+    {
+      id: "e6", tag: "physical",
+      title: "Fußspuren im Gartenweg",
+      desc: "Fußstapfen eines Mannes von über sechs Fuß Größe, in quadratischen Stiefeln.",
+      location: "l2",
+      trigger: "inspect",
+      keywords: ["fußspuren","abdruck","stiefel","weg","pfad","groß","schritt"],
+      watson_hint: "Im aufgeweichten Boden lässt sich manches ablesen.",
+      found: false
+    },
+    {
+      id: "e7", tag: "document",
+      title: "Pillenschachtel (zwei Pillen)",
+      desc: "Gefunden im Zimmer Stangersons. Eine harmlose, eine tödliche Pille. Der Täter spielte Gott.",
+      location: "l4",
+      trigger: "inspect",
+      keywords: ["schachtel","pille","medizin","tasche","nachttisch","tisch","schublade","zimmer","untersuche"],
+      watson_hint: "Stangersons Habseligkeiten könnten einen Schlüssel enthalten.",
+      found: false
+    },
+    {
+      id: "e8", tag: "testimony",
+      title: "Aussage: Charpentier-Streit",
+      desc: "Arthur Charpentier stritt lautstark mit Drebber. Seine Schwester Alice wurde von Drebber belästigt.",
+      location: "l6",
+      trigger: "talk",
+      keywords: ["streit","alice","tochter","charpentier","arthur","schwester","drebber","abend","nacht"],
+      watson_hint: "Mrs. Charpentier weiß mehr als sie zugibt.",
+      found: false
+    },
+    {
+      id: "e9", tag: "testimony",
+      title: "Telegramm aus Cleveland",
+      desc: "Bestätigt, dass ein 'J.H.' in Europa unterwegs ist. Initialen stimmen mit Stangersons Notizen überein.",
+      location: "l3",
+      trigger: "talk",
+      keywords: ["telegramm","cleveland","america","j.h","initialen","nachricht","draht"],
+      watson_hint: "Gregson hat Informationen aus Amerika erhalten.",
+      found: false
+    },
+    {
+      id: "e10", tag: "physical",
+      title: "Cab-Nr. 2704 — Jefferson Hope",
+      desc: "Fahrer Jefferson Hope, Cab-Nr. 2704. Durch Baker Street Irregulars ermittelt.",
+      location: null,
+      trigger: "combine",
+      requires: ["e5","e6"],
+      keywords: ["droschke","cab","fahrer","kutsche","suche","irregulars","wiggins"],
+      watson_hint: null,
+      found: false
+    }
   ],
+
+  // Ort → freischaltbare Beweis-IDs (welche SUCHEN möglich ist)
+  locationEvidence: {
+    "l2": ["e1","e2","e3","e4","e5","e6"],
+    "l3": ["e9"],
+    "l4": ["e7"],
+    "l6": ["e8"]
+  },
+
   suspects: [
-    { name: "Jefferson Hope", role: "Cab-Fahrer, fruher Grubenbauingenieur", status: "free", detail: "Aus Nevada. Fahrt Droschke in London. Verfolgt Drebber und Stangerson seit zwanzig Jahren." },
-    { name: "Arthur Charpentier", role: "Marineleutnant", status: "free", detail: "Sohn der Vermieterin von Drebber. Stritt mit dem Opfer wegen Belastigung seiner Schwester Alice." },
-    { name: "Tobias Gregson", role: "Inspektor, Scotland Yard", status: "cleared", detail: "Kompetent aber konventionell. Verhaftete Charpentier voreilig." }
+    { name: "Jefferson Hope", role: "Cab-Fahrer, früher Grubenbauingenieur",
+      status: "free", detail: "Aus Nevada. Fährt Droschke in London. Verfolgt Drebber und Stangerson seit zwanzig Jahren." },
+    { name: "Arthur Charpentier", role: "Marineleutnant",
+      status: "free", detail: "Sohn der Vermieterin von Drebber. Stritt mit dem Opfer wegen Belästigung seiner Schwester Alice." },
+    { name: "Tobias Gregson", role: "Inspektor, Scotland Yard",
+      status: "cleared", detail: "Kompetent aber konventionell. Verhaftete Charpentier voreilig." }
   ],
+
   locations: [
-    { id: "l1", name: "Baker Street 221B", district: "Marylebone", desc: "Heimstatte von Holmes und Watson. Laboratorium, Archiv, Denkraum.", locked: false, action: "Ermittlungen besprechen" },
-    { id: "l2", name: "3 Lauriston Gardens", district: "Brixton", desc: "Das leerstehende Haus, in dem Drebbers Leiche gefunden wurde. Der Haupttatort.", locked: false, action: "Tatort inspizieren" },
-    { id: "l3", name: "Scotland Yard", district: "Westminster", desc: "Sitz der Metropolitanpolizei. Gregson und Lestrade haben dort ihr Buro.", locked: false, action: "Gregson befragen" },
-    { id: "l4", name: "Halliday's Private Hotel", district: "Little George Street", desc: "Hotel, in dem Stangersons Leiche gefunden wurde. Zweiter Tatort.", locked: false, action: "Stangersons Zimmer untersuchen" },
-    { id: "l5", name: "Opiumhohle (Upper Swandam Lane)", district: "City-Rand / Ost", desc: "Bekannter Treffpunkt der Londoner Unterwelt. Informanten sind hier zu finden.", locked: true, action: "Verkleidet eintreten" },
-    { id: "l6", name: "Charpentier-Pension", district: "Camberwell", desc: "Die Pension, in der Drebber logiert hatte. Frau Charpentier kann Auskunft geben.", locked: false, action: "Mrs. Charpentier befragen" }
+    { id: "l1", name: "Baker Street 221B", district: "Marylebone",
+      desc: "Heimstätte von Holmes und Watson. Laboratorium, Archiv, Denkraum.",
+      locked: false, action: "Ermittlungen besprechen" },
+    { id: "l2", name: "3 Lauriston Gardens", district: "Brixton",
+      desc: "Das leerstehende Haus, in dem Drebbers Leiche gefunden wurde. Der Haupttatort.",
+      locked: false, action: "Tatort inspizieren" },
+    { id: "l3", name: "Scotland Yard", district: "Westminster",
+      desc: "Sitz der Metropolitanpolizei. Gregson und Lestrade haben dort ihr Büro.",
+      locked: false, action: "Gregson befragen" },
+    { id: "l4", name: "Halliday's Private Hotel", district: "Little George Street",
+      desc: "Hotel, in dem Stangersons Leiche gefunden wurde. Zweiter Tatort.",
+      locked: false, action: "Stangersons Zimmer untersuchen" },
+    { id: "l5", name: "Opiumhöhle (Upper Swandam Lane)", district: "City-Rand / Ost",
+      desc: "Bekannter Treffpunkt der Londoner Unterwelt. Informanten sind hier zu finden.",
+      locked: true, action: "Verkleidet eintreten",
+      unlockRequires: ["e5","e6"] },
+    { id: "l6", name: "Charpentier-Pension", district: "Camberwell",
+      desc: "Die Pension, in der Drebber logiert hatte. Frau Charpentier kann Auskunft geben.",
+      locked: false, action: "Mrs. Charpentier befragen" }
   ],
-  phases: ["Tatortbesichtigung", "Erste Verdachtige", "Beweiskatalog vollstandig", "Anklage erheben"],
-  currentPhase: 0,
+
+  // Phasen-Logik: welche Beweise braucht man für Phase X
+  phases: [
+    { id: "crime_scene",   label: "Tatortbesichtigung",     requires: [] },
+    { id: "first_leads",   label: "Erste Ermittlungen",     requires: ["e1","e2"] },
+    { id: "deep_inquiry",  label: "Tiefe Ermittlung",       requires: ["e1","e2","e5","e6"] },
+    { id: "closing_in",    label: "Schlinge zieht sich zu", requires: ["e1","e2","e3","e5","e6","e7"] },
+    { id: "ready",         label: "Bereit zur Anklage",     requires: ["e1","e2","e3","e5","e6","e7","e10"] }
+  ],
+
   solution: {
     perpetrator: "Jefferson Hope",
-    motive: "Rache fur den Tod von Lucy Ferrier und John Ferrier in Utah, 1860. Drebber und Stangerson haben durch den Einfluss der Mormonen-Gemeinschaft Lucys Tod verursacht.",
-    method: "Vergiftung durch eine von zwei Pillen — eine harmlos, eine todlich. Hope uberliess dem Opfer den Zufall.",
-    verdict: "Hope starb in der Nacht nach seiner Festnahme an einem Aortenaneurysma. Die Gerechtigkeit vollzog sich auf ihre eigene Weise."
-  }
+    motive: "Rache für den Tod von Lucy Ferrier und John Ferrier in Utah, 1860.",
+    method: "Vergiftung durch eine von zwei Pillen — eine harmlos, eine tödlich.",
+    verdict: "Hope starb in der Nacht nach seiner Festnahme an einem Aortenaneurysma."
+  },
+
+  // Watson-Persönlichkeit für diesen Fall
+  watson_persona: "Du bist Dr. Watson, 1881. Militärisch, loyal, bewundernd gegenüber Holmes. Britischer Understatement-Humor. Gelegentlich viktorianischer Slang.",
+
+  // Irregulars-Hints (werden bei Bedarf eingesetzt)
+  irregulars_hints: [
+    "Wiggins kratzte sich den Kopf. 'Ey Mr. Holmes, der Cab-Fahrer der Nacht — groß wie ein Baum. Nie vorher in der Gegend gesehen.'",
+    "'Mr. Holmes,' flüsterte Wiggins, 'die Leute in Brixton sagen, die Kutsche stand dort schon eine Stunde vor Mitternacht.'",
+    "'Hab was rausgefunden, Mr. Holmes,' grinste Wiggins. 'Cab-Nr. 2704. Der Fahrer heißt Hope. Jefferson Hope. Aus Amerika.'"
+  ]
 };
 
 // ══════════════════════════════════════════════════════════════════
 //  GAME STATE
 // ══════════════════════════════════════════════════════════════════
 var G = {
-  evidence: [],        // Array of found evidence IDs
-  deductions: [],      // Array of deduction strings
-  visitedLocations: [],
-  chatHistory: [],
-  leadsUsed: 0,
+  evidence: [],              // gefundene Beweis-IDs
+  deductions: [],            // Schlussfolgerungs-Strings
+  visitedLocations: [],      // besuchte Ort-IDs
+  currentLocation: null,     // aktuell aktiver Ort
+  chatHistory: [],           // letzte Nachrichten für API
+  leadsUsed: 0,              // Gesamt-Schritte
+  hintsUsed: 0,              // explizite Hint-Anfragen
+  actionsWithoutProgress: 0, // Schritte seit letztem Beweis
+  irregularsHintIndex: 0,    // welcher Irregulars-Hint als nächstes
   caseStarted: false,
-  verdictGiven: false
+  verdictGiven: false,
+  sessionSummary: ""         // komprimierte Zusammenfassung für Langzeit-Gedächtnis
 };
 
-// Persist state
-var LKEY = 'sherlock_asis_v1';
+var LKEY = 'sherlock_asis_v2';
 function saveState() { try { localStorage.setItem(LKEY, JSON.stringify(G)); } catch(e) {} }
 function loadState() {
   try {
@@ -1187,49 +1345,256 @@ function loadState() {
   } catch(e) {}
 }
 
+// Aktuelle Spielphase berechnen
+function getCurrentPhase() {
+  var phase = CASE.phases[0];
+  for(var i = CASE.phases.length - 1; i >= 0; i--) {
+    var p = CASE.phases[i];
+    if(p.requires.every(function(id){ return G.evidence.includes(id); })) {
+      phase = p;
+      break;
+    }
+  }
+  return phase;
+}
+
+// Prüft ob Beweis triggerbar ist (richtiger Ort + richtige Keywords)
+function checkEvidenceTrigger(evidenceId, playerText) {
+  var ev = CASE.evidence.find(function(e){ return e.id === evidenceId; });
+  if(!ev || G.evidence.includes(ev.id)) return false;
+
+  // Combine-Beweise: erst wenn Voraussetzungen erfüllt
+  if(ev.trigger === 'combine') {
+    if(!ev.requires.every(function(r){ return G.evidence.includes(r); })) return false;
+  }
+
+  // Ortscheck: Beweis nur am richtigen Ort findbar
+  if(ev.location && ev.location !== G.currentLocation) return false;
+
+  // Keyword-Match im Spielertext
+  var lower = playerText.toLowerCase();
+  return ev.keywords.some(function(k){ return lower.includes(k); });
+}
+
+// Alle triggerbaren Beweise am aktuellen Ort prüfen
+function checkAllTriggers(playerText) {
+  var triggered = [];
+  CASE.evidence.forEach(function(ev) {
+    if(checkEvidenceTrigger(ev.id, playerText)) {
+      triggered.push(ev.id);
+    }
+  });
+  return triggered;
+}
+
 // ══════════════════════════════════════════════════════════════════
-//  SYSTEM PROMPT — The locked "Game Master" instructions
+//  SYSTEM PROMPT — vollständig, mit Trigger- und Hint-Logik
 // ══════════════════════════════════════════════════════════════════
 function buildSystemPrompt() {
-  var foundEvidenceText = G.evidence.length
+  var phase = getCurrentPhase();
+
+  var foundText = G.evidence.length
     ? G.evidence.map(function(id){
-        var ev = CASE.evidence.find(function(e){return e.id===id;});
+        var ev = CASE.evidence.find(function(e){ return e.id===id; });
         return ev ? '- ' + ev.title + ': ' + ev.desc : '';
       }).join('\n')
     : 'Noch keine Beweise gesichert.';
 
-  var visitedText = G.visitedLocations.length
-    ? G.visitedLocations.join(', ')
-    : 'Noch kein Ort besucht.';
+  // Welche Beweise sind am aktuellen Ort noch nicht gefunden?
+  var searchableHere = [];
+  if(G.currentLocation && CASE.locationEvidence[G.currentLocation]) {
+    CASE.locationEvidence[G.currentLocation].forEach(function(id){
+      if(!G.evidence.includes(id)) {
+        var ev = CASE.evidence.find(function(e){ return e.id===id; });
+        if(ev) searchableHere.push(ev.title);
+      }
+    });
+  }
 
-  return [
-    "Du bist der Spielleiter (Erzahler) eines Sherlock Holmes Rollenspiels. Der Spieler spielt Sherlock Holmes selbst.",
-    "Das Spiel basiert auf dem kanonischen Fall 'A Study in Scarlet' (1881) von Arthur Conan Doyle.",
-    "",
-    "DEINE ROLLE:",
-    "- Du erzahlst als Dr. Watson (1. Person) oder als allwissender Erzahler.",
-    "- Dein Stil ist viktorianisch, literarisch, atmospharisch. Kurze Absatze. Keine modernen Wendungen.",
-    "- Du kannst NPCs wie Gregson, Lestrade, Mrs. Hudson, Zeugen spielen.",
-    "- Du gibst Hinweise durch Atmosphare, nie direkt.",
-    "- KEIN Deutsch fur viktorianischen Slang — verwende echten englischen viktorianischen Jargon: 'rattled', 'queer fish', 'the morbs'.",
-    "",
-    "UNVERANDERLICHE SPIELREGELN:",
-    "- Der Tater ist Jefferson Hope. Das wird NIEMALS direkt verraten, nur durch Beweise.",
-    "- Wenn der Spieler einen der kanonischen Beweise ergibt (Blutspuren, Schrift RACHE, Zigarrenasche, Kutschspuren, Ehering, Pillen), markiere dies deutlich mit: [BEWEIS GESICHERT: <Titel des Beweises>]",
-    "- Wenn der Spieler logisch schlussfolgert oder Fakten verbindet, markiere: [SCHLUSSFOLGERUNG: <kurz>]",
-    "- Halluziniere KEINE neuen Fakten, die nicht im Kanon sind.",
-    "- Wenn der Spieler direkt nach dem Tater fragt ohne Beweise: Watson reagiert ungewiss oder verweist auf unvollstandige Beweislage.",
-    "- Behalte Antworten unter 200 Worten.",
-    "",
-    "AKTUELLER SPIELSTAND:",
-    "Besuchte Orte: " + visitedText,
-    "Gesicherte Beweise:\n" + foundEvidenceText,
-    "Gefuhrte Ermittlungsschritte: " + G.leadsUsed,
-    "",
-    "Wenn du Beweise in deiner Antwort entdeckst oder der Spieler sie findet, weise Watson an, sie ins Notizbuch einzutragen (Marker: [BEWEIS GESICHERT: ...]).",
-    "Antworte auf Deutsch, im viktorianischen Stil."
-  ].join('\n');
+  // Hint-Modus: Watson-Nudge wenn festgesteckt
+  var hintInstruction = '';
+  if(G.actionsWithoutProgress >= 6) {
+    hintInstruction = 'WICHTIG: Der Spieler steckt seit ' + G.actionsWithoutProgress +
+      ' Schritten fest. Watson soll JETZT einen atmosphärischen Hinweis geben — ' +
+      'nicht die Lösung, aber eine Beobachtung die zum nächsten Beweis führt. ' +
+      'In Character bleiben, nie direkt sagen was zu tun ist.';
+  } else if(G.actionsWithoutProgress >= 3) {
+    hintInstruction = 'Der Spieler macht seit ' + G.actionsWithoutProgress +
+      ' Schritten keinen Fortschritt. Watson darf subtil eine Frage stellen ' +
+      'die die Aufmerksamkeit lenkt, ohne die Antwort zu geben.';
+  }
+
+  var lines = [
+    'Du bist der Spielleiter eines Sherlock Holmes Rollenspiels.',
+    'Der Spieler spielt Sherlock Holmes selbst. Du spielst Dr. Watson und alle NPCs.',
+    '',
+    'WATSON-PERSONA: ' + CASE.watson_persona,
+    '',
+    'STIL: Viktorianisch, literarisch, atmosphärisch. Kurze Absätze. Kein modernes Vokabular.',
+    'Gelegentlich englischer viktorianischer Slang: rattled, queer fish, the morbs, capital.',
+    '',
+    'SPIELREGELN:',
+    '- Der Täter ist Jefferson Hope. Wird NIE direkt verraten.',
+    '- Halluziniere KEINE Fakten die nicht im Kanon sind.',
+    '- Antworten unter 180 Wörter.',
+    '- Antworte immer auf Deutsch.',
+    '',
+    'BEWEIS-MECHANIK:',
+    '- Beweise werden NUR freigeschaltet wenn der Spieler aktiv danach sucht.',
+    '- Wenn der Spieler einen Beweis durch seine Aktion findet, schreibe genau: [BEWEIS GESICHERT: <Titel>]',
+    '- Wenn der Spieler logisch kombiniert: [SCHLUSSFOLGERUNG: <kurz>]',
+    '- Zeige NIE einen Beweis-Marker wenn der Spieler nicht aktiv gesucht hat.',
+    '',
+    'AKTUELLER ZUSTAND:',
+    'Phase: ' + phase.label,
+    'Aktueller Ort: ' + (G.currentLocation || 'keiner'),
+    'Besuchte Orte: ' + (G.visitedLocations.join(', ') || 'keine'),
+    'Gefundene Beweise:\n' + foundText,
+    'Schritte gesamt: ' + G.leadsUsed,
+    'Hints verwendet: ' + G.hintsUsed,
+  ];
+
+  if(searchableHere.length > 0) {
+    lines.push('SUCHBAR AM AKTUELLEN ORT (nur bei passender Spieleraktion freischalten): ' + searchableHere.join(', '));
+  }
+
+  if(G.sessionSummary) {
+    lines.push('', 'BISHERIGER VERLAUF (Zusammenfassung):', G.sessionSummary);
+  }
+
+  if(hintInstruction) {
+    lines.push('', hintInstruction);
+  }
+
+  return lines.join('\n');
 }
+
+// ══════════════════════════════════════════════════════════════════
+//  SCORING
+// ══════════════════════════════════════════════════════════════════
+function calculateScore() {
+  var maxLeads = 20; // Holmes braucht ~8, Durchschnitt ~20
+  var efficiency = Math.max(0, Math.round((1 - (G.leadsUsed - 8) / maxLeads) * 40));
+  efficiency = Math.min(40, Math.max(0, efficiency));
+
+  var deductionScore = Math.min(40, G.deductions.length * 8);
+
+  var hintPenalty = Math.min(20, G.hintsUsed * 4);
+  var selfReliance = Math.max(0, 20 - hintPenalty);
+
+  var total = efficiency + deductionScore + selfReliance;
+
+  var title;
+  if(total >= 85) title = "Beratender Detektiv";
+  else if(total >= 65) title = "Kriminalist";
+  else if(total >= 45) title = "Ermittlungsgehilfe";
+  else title = "Hilfsbereiter Assistent";
+
+  return { total: total, efficiency: efficiency, deduction: deductionScore,
+           selfReliance: selfReliance, title: title };
+}
+
+// Zeigt Score-Panel nach Anklage
+function showScorePanel(verdict) {
+  var sc = calculateScore();
+  var html = '<div style="text-align:center;padding:8px 0 12px">' +
+    '<div style="font-family:var(--font-display);font-size:18px;font-weight:900;font-style:italic">' +
+    sc.title + '</div>' +
+    '<div style="font-family:var(--font-type);font-size:9px;color:var(--ink-ghost);margin-top:4px;letter-spacing:1px;text-transform:uppercase">' +
+    'Gesamtpunktzahl: ' + sc.total + ' / 100</div></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">' +
+    scoreCell('Effizienz', sc.efficiency, 40) +
+    scoreCell('Deduktion', sc.deduction, 40) +
+    scoreCell('Eigenständigkeit', sc.selfReliance, 20) +
+    '</div>' +
+    '<div style="margin-top:12px;font-family:var(--font-text);font-size:12px;font-style:italic;color:var(--ink-mid);border-top:1px solid var(--rule-light);padding-top:8px">' +
+    'Beweise gefunden: ' + G.evidence.length + '/10 &middot; Schritte: ' + G.leadsUsed +
+    ' &middot; Hints: ' + G.hintsUsed + '</div>';
+  addMsg('evidence', 'Watson\'s Urteil', html);
+}
+
+function scoreCell(label, val, max) {
+  var pct = Math.round(val / max * 100);
+  return '<div style="text-align:center;border:1px solid var(--rule-light);padding:6px 4px">' +
+    '<div style="font-family:var(--font-type);font-size:7px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-ghost)">' + label + '</div>' +
+    '<div style="font-family:var(--font-display);font-size:18px;font-weight:900;color:var(--ink)">' + val + '</div>' +
+    '<div style="font-family:var(--font-type);font-size:7px;color:var(--ink-ghost)">/ ' + max + '</div>' +
+    '<div style="height:3px;background:var(--rule-light);margin-top:4px"><div style="height:3px;background:var(--ink);width:' + pct + '%"></div></div>' +
+    '</div>';
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  HINT SYSTEM
+// ══════════════════════════════════════════════════════════════════
+
+// Expliziter Watson-Hint auf Anfrage
+function requestWatsonHint() {
+  G.hintsUsed++;
+  G.actionsWithoutProgress = 0; // Hint zählt als Fortschritt
+
+  // Finde einen Beweis am aktuellen Ort der noch nicht gefunden wurde
+  var hintEv = null;
+  if(G.currentLocation && CASE.locationEvidence[G.currentLocation]) {
+    for(var i = 0; i < CASE.locationEvidence[G.currentLocation].length; i++) {
+      var id = CASE.locationEvidence[G.currentLocation][i];
+      if(!G.evidence.includes(id)) {
+        hintEv = CASE.evidence.find(function(e){ return e.id===id; });
+        if(hintEv && hintEv.watson_hint) break;
+      }
+    }
+  }
+
+  var hintText;
+  if(hintEv && hintEv.watson_hint) {
+    hintText = '<em>' + hintEv.watson_hint + '</em>';
+  } else {
+    hintText = '<em>Holmes, vielleicht sollten wir einen anderen Ort aufsuchen. Hier scheint zunächst alles gesagt zu sein.</em>';
+  }
+
+  addMsg('ai', 'Dr. Watson (Hint)', hintText);
+  saveState();
+}
+
+// Irregulars-Hint (konkreter, teurer)
+function callIrregulars() {
+  G.hintsUsed += 2;
+  G.actionsWithoutProgress = 0;
+  var idx = Math.min(G.irregularsHintIndex, CASE.irregulars_hints.length - 1);
+  G.irregularsHintIndex++;
+
+  addMsg('ai', 'Baker Street Irregular', '<em>' + CASE.irregulars_hints[idx] + '</em>');
+  saveState();
+}
+
+// Session-Zusammenfassung generieren (alle 15 Turns)
+async function generateSessionSummary() {
+  var key = localStorage.getItem('sh_openai_key');
+  if(!key || G.chatHistory.length < 15) return;
+
+  try {
+    var resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{
+          role: 'user',
+          content: 'Fasse diesen Sherlock Holmes Ermittlungsverlauf in 3 Sätzen zusammen. ' +
+            'Nur Fakten, kein Kommentar:\n\n' +
+            G.chatHistory.slice(-15).map(function(m){ return m.role + ': ' + m.content; }).join('\n')
+        }],
+        max_tokens: 120
+      })
+    });
+    var data = await resp.json();
+    if(data.choices) {
+      G.sessionSummary = data.choices[0].message.content;
+      saveState();
+    }
+  } catch(e) {}
+}
+
+
 
 // ══════════════════════════════════════════════════════════════════
 //  CHAT / NARRATIVE
@@ -1273,11 +1638,14 @@ async function handleSend() {
   input.style.height = '';
 
   G.leadsUsed++;
+  G.actionsWithoutProgress++;
+
+  // Deterministic trigger check BEFORE API call
+  var triggeredIds = checkAllTriggers(text);
+
   showTyping(true);
 
-  // Build messages array
   var messages = [{ role: 'system', content: buildSystemPrompt() }];
-  // Append recent history (last 12 turns for context)
   G.chatHistory.slice(-12).forEach(function(m){ messages.push(m); });
   messages.push({ role: 'user', content: text });
 
@@ -1295,9 +1663,17 @@ async function handleSend() {
     var raw = data.choices[0].message.content;
     G.chatHistory.push({ role: 'user', content: text });
     G.chatHistory.push({ role: 'assistant', content: raw });
+    // Keep history lean
+    if(G.chatHistory.length > 24) G.chatHistory = G.chatHistory.slice(-24);
 
     showTyping(false);
-    processNarratorResponse(raw);
+    processNarratorResponse(raw, triggeredIds);
+
+    // Session summary every 15 turns
+    if(G.leadsUsed > 0 && G.leadsUsed % 15 === 0) generateSessionSummary();
+
+    // Update phase banner
+    updatePhaseBanner();
     saveState();
 
   } catch(err) {
@@ -1306,8 +1682,9 @@ async function handleSend() {
   }
 }
 
-function processNarratorResponse(raw) {
-  // Parse evidence markers
+function processNarratorResponse(raw, triggeredIds) {
+  triggeredIds = triggeredIds || [];
+
   var evidencePattern = /\[BEWEIS GESICHERT:\s*([^\]]+)\]/gi;
   var deductionPattern = /\[SCHLUSSFOLGERUNG:\s*([^\]]+)\]/gi;
 
@@ -1318,36 +1695,50 @@ function processNarratorResponse(raw) {
   var dedMatches = [];
   while((match = deductionPattern.exec(raw)) !== null) { dedMatches.push(match[1].trim()); }
 
-  // Strip markers from display text
   var display = raw
     .replace(/\[BEWEIS GESICHERT:[^\]]+\]/gi, '')
     .replace(/\[SCHLUSSFOLGERUNG:[^\]]+\]/gi, '')
     .trim();
 
-  // Determine message type
-  var msgType = evMatches.length > 0 ? 'evidence' : 'ai';
+  var msgType = (evMatches.length > 0 || triggeredIds.length > 0) ? 'evidence' : 'ai';
   addMsg(msgType, 'Dr. Watson', formatNarratorText(display));
-
-  // Context-sensitive Paget illustration
   checkForIllustrationTrigger(display);
 
-  // Auto-register evidence
-  evMatches.forEach(function(title) {
-    registerEvidenceByTitle(title);
+  // Register deterministically triggered evidence first
+  triggeredIds.forEach(function(id) {
+    if(!G.evidence.includes(id)) {
+      var ev = CASE.evidence.find(function(e){ return e.id===id; });
+      if(ev) {
+        G.evidence.push(id);
+        addMsg('evidence', 'Watson notiert', '<strong>[Beweis gesichert]</strong> ' + escHtml(ev.title));
+        G.actionsWithoutProgress = 0; // reset on progress
+      }
+    }
   });
 
-  // Auto-register deductions
-  dedMatches.forEach(function(ded) {
-    addDeduction(ded);
-  });
+  // Also register any KI-signaled evidence (by title match)
+  evMatches.forEach(function(title) { registerEvidenceByTitle(title); });
 
-  // Show evidence flash if found
-  if(evMatches.length > 0) {
-    evMatches.forEach(function(t) {
-      addMsg('evidence', 'Watson notiert', '<strong>[Beweis gesichert]</strong> ' + escHtml(t));
-    });
+  // Deductions
+  dedMatches.forEach(function(ded) { addDeduction(ded); });
+
+  if(G.evidence.length > 0) {
     updateEvidenceBadge();
+    renderEvidence();
   }
+
+  // Check for combine-type evidence now unlocked
+  CASE.evidence.forEach(function(ev) {
+    if(ev.trigger === 'combine' && !G.evidence.includes(ev.id)) {
+      if(ev.requires && ev.requires.every(function(r){ return G.evidence.includes(r); })) {
+        G.evidence.push(ev.id);
+        addMsg('evidence', 'Holmes erkennt', '<strong>[Schlussfolgerung freigeschaltet]</strong> ' + escHtml(ev.title));
+        G.actionsWithoutProgress = 0;
+        renderEvidence();
+        updateEvidenceBadge();
+      }
+    }
+  });
 }
 
 function formatNarratorText(text) {
@@ -1498,13 +1889,33 @@ function renderLocations() {
 }
 
 function travelToLocation(loc) {
-  if(!G.visitedLocations.includes(loc.name)) {
-    G.visitedLocations.push(loc.name);
+  G.currentLocation = loc.id;
+  if(!G.visitedLocations.includes(loc.id)) {
+    G.visitedLocations.push(loc.id);
   }
   switchTab('narrative');
-  var msg = 'Ich reise nach ' + loc.name + ' (' + loc.district + '). ' + loc.action + '.';
+  var msg = 'Ich reise nach ' + loc.name + '. ' + loc.action + '.';
   document.getElementById('user-input').value = msg;
   handleSend();
+}
+
+function updatePhaseBanner() {
+  var phase = getCurrentPhase();
+  var loc = G.currentLocation
+    ? CASE.locations.find(function(l){ return l.id === G.currentLocation; })
+    : null;
+  var locLabel = loc ? loc.name : 'Kein Ort';
+  document.getElementById('phase-banner').textContent =
+    phase.label + ' \u2014 ' + locLabel;
+
+  // Unlock locations based on evidence
+  CASE.locations.forEach(function(loc) {
+    if(loc.unlockRequires) {
+      var unlocked = loc.unlockRequires.every(function(id){ return G.evidence.includes(id); });
+      loc.locked = !unlocked;
+    }
+  });
+  renderLocations();
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1540,14 +1951,20 @@ function closeVerdict() { document.getElementById('verdict-overlay').classList.r
 function submitVerdict() {
   var suspect = document.getElementById('verdict-suspect').value;
   var theory = document.getElementById('verdict-theory').value.trim();
-  if(!suspect) { alert('Bitte einen Verdachtigen benennen.'); return; }
+  if(!suspect) { alert('Bitte einen Verdächtigen benennen.'); return; }
   closeVerdict();
   G.verdictGiven = true;
   switchTab('narrative');
 
-  var msg = 'ANKLAGE: Ich beschuldige ' + suspect + '. ' + (theory || 'Das ist meine abschliessende Theorie.');
+  var msg = 'ANKLAGE: Ich beschuldige ' + suspect + '. ' + (theory || 'Das ist meine abschließende Theorie.');
   document.getElementById('user-input').value = msg;
   handleSend();
+
+  // Show score after short delay (let KI respond first)
+  setTimeout(function() {
+    showScorePanel(suspect);
+  }, 4000);
+
   saveState();
 }
 
