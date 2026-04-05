@@ -2445,6 +2445,9 @@ function submitVerdict() {
   if(!suspect) { alert('Bitte einen Verdächtigen benennen.'); return; }
   closeVerdict();
   G.verdictGiven = true;
+  // Kapitel als abgeschlossen markieren (für Fortschritts-Tracking)
+  var caseId = new URLSearchParams(location.search).get('case');
+  if(caseId) markChapterComplete(caseId);
   switchTab('narrative');
 
   var msg = 'ANKLAGE: Ich beschuldige ' + suspect + '. ' + (theory || 'Das ist meine abschließende Theorie.');
@@ -2711,13 +2714,16 @@ async function init() {
   // Desktop two-column layout
   initDesktopLayout();
 
-  // Splash screen
+  // Registry laden (async — befüllt CASE_REGISTRY und rendert Splash/Liste)
+  loadRegistry();
+
+  // Splash screen — zeige sofort mit leerem Grid, Registry füllt es nach
   renderSplash();
-  // Skip splash if already mid-game
   if(G.caseStarted && G.chatHistory.length > 0) {
     hideSplash();
   }
-  // If case started but no history, show splash for case selection
+
+  // Splash screen handles case start — see hideSplash() and startFromSplash()
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2986,68 +2992,71 @@ function setTrack(idx) {
 // ══════════════════════════════════════════════════════════════════
 
 // Registry bekannter Fälle — wird durch cases/-Ordner erweitert
-var CASE_REGISTRY = [
-  // ── Einzelne Geschichten ─────────────────────────────────────────
-  {
+// ══════════════════════════════════════════════════════════════════
+//  REGISTRY — dynamisch aus cases/registry.json geladen
+//  Fallback: leeres Array (eingebetteter Fall bleibt immer spielbar)
+// ══════════════════════════════════════════════════════════════════
+var CASE_REGISTRY = [];  // wird durch loadRegistry() befüllt
+
+// Gelesene Fortschrittsdaten: welche Kapitel abgeschlossen sind
+function getCompletedChapters() {
+  try { return JSON.parse(localStorage.getItem('sh_completed') || '[]'); }
+  catch(e) { return []; }
+}
+function markChapterComplete(id) {
+  var done = getCompletedChapters();
+  if(!done.includes(id)) { done.push(id); localStorage.setItem('sh_completed', JSON.stringify(done)); }
+}
+
+async function loadRegistry() {
+  // Eingebetteten Eintrag immer voranstellen
+  var builtin = [{
     id: 'study-in-scarlet',
     title: 'Eine Studie in Scharlachrot',
     year: 1881,
-    type: 'Roman',
-    status: 'active'
-    // Pfad: eingebettet (kein cases/-Ordner nötig)
-  },
-  {
-    id: 'scandal-in-bohemia',
-    title: 'Ein Skandal in Böhmen',
-    year: 1891,
-    type: 'Kurzgeschichte',
-    status: 'available'
-    // Pfad: cases/scandal-in-bohemia.json
-  },
-  {
-    id: 'speckled-band',
-    title: 'Das gefleckte Band',
-    year: 1892,
-    type: 'Kurzgeschichte',
-    status: 'available'
-    // Pfad: cases/speckled-band.json
-  },
-  {
-    id: 'red-headed-league',
-    title: 'Der Bund der Rothaarigen',
-    year: 1891,
-    type: 'Kurzgeschichte',
-    status: 'locked'
-  },
+    caseType: 'short',
+    status: 'active',
+    builtin: true
+  }];
 
-  // ── Romane mit Kapitel-Struktur ───────────────────────────────────
-  // Kapitel werden als Unterordner angelegt: cases/hound/
-  // URL-Aufruf: ?case=hound/chapter-1
-  // Jedes Kapitel hat nextChapter-Feld → schaltet nächstes frei
-  {
-    id: 'hound/chapter-1',
-    title: 'Der Hund der Baskervilles',
-    subtitle: 'Kap. I–III: Herr Stapleton',
-    year: 1902,
-    type: 'Roman · Kapitel 1',
-    status: 'locked'
-    // Pfad: cases/hound/chapter-1.json
-  },
-  {
-    id: 'hound/chapter-2',
-    title: 'Der Hund der Baskervilles',
-    subtitle: 'Kap. IV–VI: Das Moor',
-    year: 1902,
-    type: 'Roman · Kapitel 2',
-    status: 'locked'
-    // Pfad: cases/hound/chapter-2.json
-    // unlockAfter: 'hound/chapter-1'
+  try {
+    var resp = await fetch('cases/registry.json');
+    if(!resp.ok) throw new Error('no registry');
+    var reg = await resp.json();
+
+    // Romane: lade ihre index.json um Kapitel zu kennen
+    var expanded = [];
+    for(var i = 0; i < reg.length; i++) {
+      var entry = reg[i];
+      if(entry.caseType === 'novel') {
+        try {
+          var idxResp = await fetch('cases/' + entry.id + '/index.json');
+          if(idxResp.ok) {
+            var idx = await idxResp.json();
+            entry.chapters = idx.chapters || [];
+          }
+        } catch(e) { entry.chapters = []; }
+      }
+      expanded.push(entry);
+    }
+
+    // Dedupliziere: eingebetteter Fall nicht doppelt anzeigen
+    var ids = builtin.map(function(b){ return b.id; });
+    expanded = expanded.filter(function(e){ return !ids.includes(e.id); });
+    CASE_REGISTRY = builtin.concat(expanded);
+
+  } catch(e) {
+    // Kein registry.json → nur eingebetteter Fall
+    CASE_REGISTRY = builtin;
   }
-];
+
+  renderCaseList();
+  renderSplash();
+}
 
 function openCaseSelector() {
-  renderCaseList();
   document.getElementById('case-selector').classList.add('open');
+  renderCaseList();
 }
 function closeCaseSelector() {
   document.getElementById('case-selector').classList.remove('open');
@@ -3055,32 +3064,78 @@ function closeCaseSelector() {
 
 function renderCaseList() {
   var list = document.getElementById('case-list');
+  if(!list) return;
+  var completed = getCompletedChapters();
   var statusLabel = { active: 'Aktiv', available: 'Verfügbar', locked: 'In Arbeit' };
 
   list.innerHTML = CASE_REGISTRY.map(function(c) {
-    var isLocked = c.status === 'locked';
-    var isActive = c.id === (CASE.id || 'study-in-scarlet');
-    return '<div class="case-entry' + (isLocked ? '" style="cursor:not-allowed' : '') + '"' +
+    return renderCaseEntry(c, completed, statusLabel);
+  }).join('') +
+  '<div style="margin-top:12px">' +
+  '<button class="btn-secondary" style="width:100%;font-size:10px;padding:8px" onclick="closeCaseSelector()">Abbrechen</button>' +
+  '</div>';
+}
+
+function renderCaseEntry(c, completed, statusLabel) {
+  var isLocked = c.status === 'locked';
+  var isActive = c.id === (CASE.id || 'study-in-scarlet');
+  var html = '';
+
+  if(c.caseType === 'novel' && c.chapters && c.chapters.length) {
+    // Roman: Kopfzeile + aufklappbare Kapitel-Liste
+    html += '<div class="case-entry" style="flex-direction:column;cursor:default;border-bottom:none">' +
+      '<div style="display:flex;gap:0">' +
+        '<div class="case-entry-year">' + c.year + '</div>' +
+        '<div class="case-entry-info">' +
+          '<div class="case-entry-title">' + escHtml(c.title) + '</div>' +
+          '<div class="case-entry-meta">Roman · ' + c.chapters.length + ' Kapitel</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:4px 0 0 0">';
+
+    c.chapters.forEach(function(ch, idx) {
+      var chId = c.id + '/' + ch.id;
+      var chDone = completed.includes(chId);
+      var prevDone = idx === 0 || completed.includes(c.id + '/' + c.chapters[idx-1].id);
+      var chLocked = !prevDone && idx > 0;
+      var chActive = chId === new URLSearchParams(location.search).get('case');
+
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:5px 8px 5px 12px;' +
+        'border-top:1px solid var(--rule-light);' +
+        (chLocked ? 'opacity:0.4;cursor:not-allowed' : 'cursor:pointer') + '"' +
+        (!chLocked ? ' onclick="selectCase(\'' + chId + '\')"' : '') + '>' +
+        '<span style="font-family:var(--font-type);font-size:16px;color:var(--ink-ghost);width:16px;text-align:center">' +
+          (chDone ? '✓' : chLocked ? '🔒' : '▶') + '</span>' +
+        '<div style="flex:1">' +
+          '<div style="font-family:var(--font-text);font-size:12px;font-style:italic;color:var(--ink)">' +
+            escHtml(ch.title) + '</div>' +
+          (ch.subtitle ? '<div style="font-family:var(--font-type);font-size:8px;color:var(--ink-ghost);text-transform:uppercase;letter-spacing:0.5px">' + escHtml(ch.subtitle) + '</div>' : '') +
+        '</div>' +
+        (chActive ? '<span class="case-entry-status status-active">● Aktiv</span>' : '') +
+      '</div>';
+    });
+
+    html += '</div></div>';
+
+  } else {
+    // Kurzgeschichte: einfacher Eintrag
+    html += '<div class="case-entry' + (isLocked ? '" style="cursor:not-allowed' : '') + '"' +
       (!isLocked ? ' onclick="selectCase(\'' + c.id + '\')"' : '') + '>' +
       '<div class="case-entry-year">' + c.year + '</div>' +
       '<div class="case-entry-info">' +
         '<div class="case-entry-title">' + escHtml(c.title) + '</div>' +
-        '<div class="case-entry-meta">' + c.type + '</div>' +
+        '<div class="case-entry-meta">Kurzgeschichte' + (isLocked ? ' &mdash; In Arbeit' : '') + '</div>' +
         '<span class="case-entry-status status-' + (isActive ? 'active' : c.status) + '">' +
-          (isActive ? '● Aktuell' : statusLabel[c.status]) +
-        '</span>' +
+          (isActive ? '● Aktuell' : statusLabel[c.status]) + '</span>' +
       '</div></div>';
-  }).join('') +
-  '<div style="margin-top:12px;display:flex;gap:8px">' +
-  '<button class="btn-secondary" style="flex:1;font-size:10px;padding:8px" onclick="closeCaseSelector()">Abbrechen</button>' +
-  '</div>';
+  }
+  return html;
 }
 
 function selectCase(caseId) {
   closeCaseSelector();
-  if(caseId === (CASE.id || 'study-in-scarlet')) return;
-
-  // Navigiere zu ?case=caseId — lädt neuen Fall
+  var currentId = new URLSearchParams(location.search).get('case') || 'study-in-scarlet';
+  if(caseId === currentId) return;
   var url = new URL(location.href);
   url.searchParams.set('case', caseId);
   location.href = url.toString();
@@ -3224,13 +3279,32 @@ stopAllAudio = function() {
 function renderSplash() {
   var grid = document.getElementById('splash-case-grid');
   if(!grid) return;
+  var completed = getCompletedChapters();
   grid.innerHTML = CASE_REGISTRY.map(function(c) {
+    if(c.caseType === 'novel' && c.chapters && c.chapters.length) {
+      var nextChapter = null;
+      for(var i = 0; i < c.chapters.length; i++) {
+        var chId = c.id + '/' + c.chapters[i].id;
+        if(!completed.includes(chId)) { nextChapter = c.chapters[i]; break; }
+      }
+      var targetId = nextChapter ? c.id + '/' + nextChapter.id : c.id + '/chapter-1';
+      var progress = completed.filter(function(d){ return d.startsWith(c.id + '/'); }).length;
+      return '<button class="splash-case-btn" onclick="startFromSplash(\'' + targetId + '\')">' +
+        '<div style="text-align:left">' +
+          '<div>' + escHtml(c.title) + '</div>' +
+          '<span class="splash-case-meta">Roman &middot; ' +
+            (progress > 0 ? progress + '/' + c.chapters.length + ' Kap.' : 'Kapitel 1') +
+          '</span>' +
+        '</div>' +
+        '<span class="splash-case-year">' + c.year + '</span>' +
+      '</button>';
+    }
     var isLocked = c.status === 'locked';
     return '<button class="splash-case-btn' + (isLocked ? ' locked' : '') + '"' +
       (!isLocked ? ' onclick="startFromSplash(\'' + c.id + '\')"' : '') + '>' +
       '<div style="text-align:left">' +
         '<div>' + escHtml(c.title) + '</div>' +
-        '<span class="splash-case-meta">' + c.type + (isLocked ? ' &mdash; In Arbeit' : '') + '</span>' +
+        '<span class="splash-case-meta">Kurzgeschichte' + (isLocked ? ' &mdash; In Arbeit' : '') + '</span>' +
       '</div>' +
       '<span class="splash-case-year">' + c.year + '</span>' +
     '</button>';
