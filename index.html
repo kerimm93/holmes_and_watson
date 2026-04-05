@@ -1483,6 +1483,21 @@
       <div class="music-box-head">Atmosph&auml;rische Begleitung</div>
       <div class="music-box-body">
 
+        <!-- VOLUME CONTROLS — always visible at top -->
+        <span class="music-section-label" style="margin-top:0">Lautstärke</span>
+        <div style="display:grid;grid-template-columns:80px 1fr 28px;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="font-family:var(--font-type);font-size:8px;color:var(--ink-faded);text-transform:uppercase;letter-spacing:0.5px">Musik</span>
+          <input type="range" id="vol-music" min="0" max="1" step="0.05" value="0.5"
+            style="accent-color:var(--ink);width:100%" oninput="setMusicVolume(this.value)">
+          <span id="vol-music-val" style="font-family:var(--font-type);font-size:8px;color:var(--ink-ghost);text-align:right">50%</span>
+        </div>
+        <div style="display:grid;grid-template-columns:80px 1fr 28px;align-items:center;gap:6px;margin-bottom:10px">
+          <span style="font-family:var(--font-type);font-size:8px;color:var(--ink-faded);text-transform:uppercase;letter-spacing:0.5px">Stimme</span>
+          <input type="range" id="vol-voice" min="0" max="1" step="0.05" value="1"
+            style="accent-color:var(--ink);width:100%" oninput="setVoiceVolume(this.value)">
+          <span id="vol-voice-val" style="font-family:var(--font-type);font-size:8px;color:var(--ink-ghost);text-align:right">100%</span>
+        </div>
+
         <span class="music-section-label">Prozeduraler Klang (offline)</span>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
           <button class="audio-track-btn active" onclick="setProceduralTrack(0)" data-track="0">I &middot; Kaminfeuer</button>
@@ -2620,26 +2635,23 @@ function startCase() {
 }
 
 // ══════════════════════════════════════════════════════════════════
-//  CASE LOADER — lädt CASE aus URL-Parameter oder nutzt eingebetteten
-//  Beispiel: ?case=scandal-in-bohemia → fetch('cases/scandal-in-bohemia.json')
-//  Kein Parameter → nutzt eingebettetes CASE-Objekt oben
+//  CASE LOADER
+//  ?case=study-in-scarlet        → cases/study-in-scarlet.json
+//  ?case=hound/chapter-1         → cases/hound/chapter-1.json
+//  Kein Parameter                → eingebettetes CASE (Study in Scarlet)
 // ══════════════════════════════════════════════════════════════════
 async function loadCase() {
   var caseId = new URLSearchParams(location.search).get('case');
-  if(!caseId) return; // nutze eingebettetes CASE
+  if(!caseId) return;
 
   try {
     var resp = await fetch('cases/' + caseId + '.json');
-    if(!resp.ok) throw new Error('Nicht gefunden');
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
     var loaded = await resp.json();
-    // Überschreibe globales CASE
     Object.keys(loaded).forEach(function(k){ CASE[k] = loaded[k]; });
-    document.title = loaded.title || document.title;
-    var titleEl = document.querySelector('.masthead-title');
-    if(titleEl && loaded.title) titleEl.textContent = loaded.title;
-    console.log('Fall geladen:', loaded.title);
+    console.log('Fall geladen:', loaded.title || caseId);
   } catch(e) {
-    console.warn('Case-Datei nicht gefunden, nutze eingebetteten Fall:', e.message);
+    console.warn('Case nicht gefunden, nutze Fallback:', e.message);
   }
 }
 
@@ -2938,7 +2950,7 @@ function startTrack(idx) {
   if(ctx.state === 'suspended') ctx.resume();
 
   masterGain = ctx.createGain();
-  masterGain.gain.value = 0.7;
+  masterGain.gain.value = getMusicVolume();
   masterGain.connect(ctx.destination);
   activeNodes.push(masterGain);
 
@@ -2975,19 +2987,22 @@ function setTrack(idx) {
 
 // Registry bekannter Fälle — wird durch cases/-Ordner erweitert
 var CASE_REGISTRY = [
+  // ── Einzelne Geschichten ─────────────────────────────────────────
   {
     id: 'study-in-scarlet',
     title: 'Eine Studie in Scharlachrot',
     year: 1881,
     type: 'Roman',
-    status: 'active'   // active = eingebettet & spielbar
+    status: 'active'
+    // Pfad: eingebettet (kein cases/-Ordner nötig)
   },
   {
     id: 'scandal-in-bohemia',
     title: 'Ein Skandal in Böhmen',
     year: 1891,
     type: 'Kurzgeschichte',
-    status: 'available'  // available = JSON-Datei in cases/
+    status: 'available'
+    // Pfad: cases/scandal-in-bohemia.json
   },
   {
     id: 'speckled-band',
@@ -2995,20 +3010,38 @@ var CASE_REGISTRY = [
     year: 1892,
     type: 'Kurzgeschichte',
     status: 'available'
+    // Pfad: cases/speckled-band.json
   },
   {
     id: 'red-headed-league',
     title: 'Der Bund der Rothaarigen',
     year: 1891,
     type: 'Kurzgeschichte',
-    status: 'locked'   // locked = noch nicht kodiert
+    status: 'locked'
+  },
+
+  // ── Romane mit Kapitel-Struktur ───────────────────────────────────
+  // Kapitel werden als Unterordner angelegt: cases/hound/
+  // URL-Aufruf: ?case=hound/chapter-1
+  // Jedes Kapitel hat nextChapter-Feld → schaltet nächstes frei
+  {
+    id: 'hound/chapter-1',
+    title: 'Der Hund der Baskervilles',
+    subtitle: 'Kap. I–III: Herr Stapleton',
+    year: 1902,
+    type: 'Roman · Kapitel 1',
+    status: 'locked'
+    // Pfad: cases/hound/chapter-1.json
   },
   {
-    id: 'hound-of-baskervilles',
+    id: 'hound/chapter-2',
     title: 'Der Hund der Baskervilles',
+    subtitle: 'Kap. IV–VI: Das Moor',
     year: 1902,
-    type: 'Roman',
+    type: 'Roman · Kapitel 2',
     status: 'locked'
+    // Pfad: cases/hound/chapter-2.json
+    // unlockAfter: 'hound/chapter-1'
   }
 ];
 
@@ -3071,6 +3104,7 @@ function updateMastheadTitle() {
 
 function openMusicOverlay() {
   document.getElementById('music-overlay').classList.add('open');
+  initVolumeSliders();
 }
 function closeMusicOverlay() {
   document.getElementById('music-overlay').classList.remove('open');
@@ -3320,7 +3354,7 @@ function speakBrowser(text, btn) {
   if(voice) utt.voice = voice;
   utt.pitch = pitch;
   utt.rate = rate;
-  utt.volume = 1;
+  utt.volume = getVoiceVolume();
 
   if(btn) {
     ttsCurrentBtn = btn;
@@ -3372,6 +3406,7 @@ async function speakOpenAI(text, btn) {
     var blob = await resp.blob();
     var url = URL.createObjectURL(blob);
     var audio = new Audio(url);
+    audio.volume = getVoiceVolume();
 
     if(btn) {
       ttsCurrentBtn = btn;
@@ -3426,6 +3461,50 @@ function addTTSButton(block, text) {
   btn.textContent = '▶ Vorlesen';
   btn.onclick = function() { speak(text, btn); };
   block.appendChild(btn);
+}
+
+// ── Volume controls ───────────────────────────────────────────────
+function setMusicVolume(val) {
+  val = parseFloat(val);
+  localStorage.setItem('sh_vol_music', val);
+  var pct = Math.round(val * 100) + '%';
+  var el = document.getElementById('vol-music-val');
+  if(el) el.textContent = pct;
+  // Web Audio procedural
+  if(masterGain) masterGain.gain.value = val;
+  // Local audio file
+  var localPlayer = document.getElementById('local-audio-player');
+  if(localPlayer) localPlayer.volume = val;
+  // YouTube iframe can't be volume-controlled via JS cross-origin,
+  // but we resize it to 0 as visual cue — user uses YT controls
+}
+
+function setVoiceVolume(val) {
+  val = parseFloat(val);
+  localStorage.setItem('sh_vol_voice', val);
+  var pct = Math.round(val * 100) + '%';
+  var el = document.getElementById('vol-voice-val');
+  if(el) el.textContent = pct;
+}
+
+function getVoiceVolume() {
+  return parseFloat(localStorage.getItem('sh_vol_voice') || '1');
+}
+function getMusicVolume() {
+  return parseFloat(localStorage.getItem('sh_vol_music') || '0.5');
+}
+
+function initVolumeSliders() {
+  var mv = getMusicVolume();
+  var vv = getVoiceVolume();
+  var ms = document.getElementById('vol-music');
+  var vs = document.getElementById('vol-voice');
+  var mv2 = document.getElementById('vol-music-val');
+  var vv2 = document.getElementById('vol-voice-val');
+  if(ms) ms.value = mv;
+  if(vs) vs.value = vv;
+  if(mv2) mv2.textContent = Math.round(mv*100) + '%';
+  if(vv2) vv2.textContent = Math.round(vv*100) + '%';
 }
 
 window.addEventListener('load', init);
