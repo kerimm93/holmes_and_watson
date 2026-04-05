@@ -1,290 +1,1630 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sherlock Holmes: OpenAI Detective</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --paper: #fdfaf3;
-            --ink: #1a1a1a;
-            --accent: #7c2d12;
-            --gold: #b45309;
-        }
-        body {
-            font-family: 'Source Sans Pro', sans-serif;
-            background-color: #121212;
-            color: var(--ink);
-            overscroll-behavior: none;
-        }
-        .app-container {
-            max-width: 500px;
-            margin: 0 auto;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--paper);
-            position: relative;
-        }
-        .header {
-            background: #f1e9db;
-            border-bottom: 2px solid #d1c7b7;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            color: var(--accent);
-        }
-        .chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .msg {
-            max-width: 88%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.5;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .msg-ai { background: white; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #e0e0e0; }
-        .msg-player { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg-system { align-self: center; background: #e2e8f0; font-size: 11px; text-transform: uppercase; color: #475569; padding: 4px 12px; border-radius: 99px; }
-        
-        .bottom-nav {
-            background: white;
-            border-top: 1px solid #ddd;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            padding: 8px 0 env(safe-area-inset-bottom);
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 11px;
-            color: #666;
-            background: none;
-            border: none;
-        }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
-        
-        .input-bar { padding: 10px 16px; background: #f0f0f0; border-top: 1px solid #ddd; display: flex; gap: 8px; }
-        input { flex: 1; padding: 10px 16px; border-radius: 24px; border: 1px solid #ccc; font-size: 16px; outline: none; }
-        .send-btn { background: var(--accent); color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-        
-        /* Loading Spinner */
-        .typing-indicator {
-            display: flex; gap: 4px; padding: 4px 8px;
-        }
-        .dot { width: 6px; height: 6px; background: #999; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Eine Studie in Scharlachrot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ── ROOT: Victorian Paper Palette ──────────────────────────── */
+    :root {
+      --paper:       #f2ead8;
+      --paper-dark:  #e4d9c0;
+      --paper-aged:  #d8cdb0;
+      --ink:         #1c1510;
+      --ink-mid:     #3d3020;
+      --ink-faded:   #6b5840;
+      --ink-ghost:   #9a8060;
+      --rule:        #5a4530;
+      --rule-light:  #a08060;
+      --blood:       #6b1010;
+      --blood-dim:   #8b2020;
+      --verdigris:   #2a4a3a;
+      --verdigris-light: #3d6b52;
+      --gold-worn:   #8b6914;
+      --shadow:      rgba(28,21,16,0.18);
+
+      --font-display: 'Playfair Display', 'IM Fell English', Georgia, serif;
+      --font-text:    'Libre Baskerville', Georgia, serif;
+      --font-type:    'Special Elite', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #2a1e10;
+      font-family: var(--font-text);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── APP SHELL ───────────────────────────────────────────────── */
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,0,0,0.7);
+    }
+
+    /* ── MASTHEAD ────────────────────────────────────────────────── */
+    #masthead {
+      background: var(--paper-dark);
+      border-bottom: 3px double var(--rule);
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .masthead-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 14px 4px;
+      border-bottom: 1px solid var(--rule-light);
+    }
+    .masthead-dateline {
+      font-family: var(--font-type);
+      font-size: 9px;
+      color: var(--ink-faded);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .masthead-settings-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-type);
+      font-size: 9px;
+      color: var(--ink-faded);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 2px 6px;
+      border: 1px solid var(--rule-light);
+    }
+    .masthead-title-block {
+      text-align: center;
+      padding: 10px 16px 6px;
+    }
+    .masthead-kicker {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--ink-faded);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .masthead-title {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+    }
+    .masthead-rule-ornament {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 16px 8px;
+      color: var(--rule);
+    }
+    .masthead-rule-ornament::before,
+    .masthead-rule-ornament::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+    .ornament-text {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-style: italic;
+      color: var(--rule);
+    }
+
+    /* ── PHASE BANNER ────────────────────────────────────────────── */
+    #phase-banner {
+      background: var(--ink);
+      color: var(--paper-aged);
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── TAB ROW ─────────────────────────────────────────────────── */
+    #tab-row {
+      display: flex;
+      background: var(--paper-dark);
+      border-bottom: 2px solid var(--rule);
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #tab-row::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex: 1;
+      min-width: 60px;
+      padding: 8px 4px 6px;
+      border: none;
+      background: none;
+      font-family: var(--font-type);
+      font-size: 8.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--ink-ghost);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .tab-btn.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+      font-weight: 700;
+    }
+
+    /* ── PANELS ──────────────────────────────────────────────────── */
+    .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .panel.active { display: flex; }
+
+    /* ── NARRATIVE PANEL ─────────────────────────────────────────── */
+    #chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--rule-light) transparent;
+    }
+
+    /* Messages styled like typeset newspaper text */
+    .msg-block {
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .msg-speaker {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--ink-faded);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .msg-speaker::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule-light);
+      opacity: 0.5;
+    }
+    .msg-body {
+      font-family: var(--font-text);
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+      font-style: italic;
+    }
+    .msg-body strong { font-style: normal; font-weight: 700; }
+
+    /* Player input — "telegraphed" style */
+    .msg-player .msg-speaker { color: var(--verdigris); }
+    .msg-player .msg-body {
+      font-style: normal;
+      font-family: var(--font-type);
+      font-size: 13px;
+      color: var(--verdigris);
+      background: rgba(42,74,58,0.07);
+      border-left: 2px solid var(--verdigris);
+      padding: 6px 10px;
+      line-height: 1.5;
+    }
+
+    /* System messages */
+    .msg-system .msg-body {
+      font-size: 11px;
+      font-style: normal;
+      text-align: center;
+      color: var(--ink-ghost);
+      font-family: var(--font-type);
+      letter-spacing: 0.5px;
+      border-top: 1px solid var(--rule-light);
+      border-bottom: 1px solid var(--rule-light);
+      padding: 6px;
+    }
+
+    /* Evidence flash */
+    .msg-evidence .msg-body {
+      background: rgba(107,16,16,0.06);
+      border: 1px solid rgba(107,16,16,0.25);
+      border-left: 3px solid var(--blood);
+      padding: 8px 10px;
+      font-style: normal;
+      font-size: 13px;
+    }
+
+    /* Typing indicator */
+    #typing-indicator {
+      display: none;
+      padding: 0 14px 10px;
+      gap: 4px;
+      align-items: center;
+    }
+    #typing-indicator.visible { display: flex; }
+    .type-dot {
+      width: 5px; height: 5px;
+      background: var(--ink-ghost);
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+    .type-dot:nth-child(2) { animation-delay: 0.2s; }
+    .type-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+    .type-label {
+      font-family: var(--font-type);
+      font-size: 9px;
+      color: var(--ink-ghost);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-left: 4px;
+    }
+
+    /* ── INPUT BAR ───────────────────────────────────────────────── */
+    #input-bar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--paper-dark);
+      border-top: 2px solid var(--rule);
+      flex-shrink: 0;
+      align-items: flex-end;
+    }
+    #user-input {
+      flex: 1;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: var(--font-type);
+      font-size: 13px;
+      padding: 8px 12px;
+      resize: none;
+      outline: none;
+      line-height: 1.4;
+      min-height: 38px;
+      max-height: 80px;
+    }
+    #user-input::placeholder { color: var(--ink-ghost); }
+    #send-btn {
+      background: var(--ink);
+      color: var(--paper-aged);
+      border: none;
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0 12px;
+      height: 38px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    #send-btn:hover { background: var(--ink-mid); }
+    #send-btn:active { background: var(--blood); }
+
+    /* ── EVIDENCE (MIND PALACE) PANEL ────────────────────────────── */
+    #evidence-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+
+    .section-head {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-mid);
+      border-bottom: 2px solid var(--rule);
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+
+    .evidence-card {
+      border: 1px solid var(--rule-light);
+      margin-bottom: 10px;
+      background: var(--paper);
+      box-shadow: 2px 2px 0 var(--shadow);
+    }
+    .evidence-card-head {
+      background: var(--ink);
+      color: var(--paper-aged);
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .evidence-card-body {
+      padding: 8px 10px;
+      font-family: var(--font-text);
+      font-size: 13px;
+      line-height: 1.55;
+      font-style: italic;
+    }
+    .evidence-tag {
+      display: inline-block;
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      margin-top: 6px;
+      border: 1px solid;
+    }
+    .tag-physical { color: var(--blood); border-color: var(--blood); background: rgba(107,16,16,0.06); }
+    .tag-testimony { color: var(--verdigris); border-color: var(--verdigris); background: rgba(42,74,58,0.06); }
+    .tag-document { color: var(--gold-worn); border-color: var(--gold-worn); background: rgba(139,105,20,0.06); }
+
+    /* Connection board */
+    #deduction-board {
+      margin-top: 20px;
+    }
+    .connection-entry {
+      font-family: var(--font-type);
+      font-size: 11px;
+      color: var(--ink-mid);
+      padding: 6px 10px;
+      border-left: 2px solid var(--rule-light);
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+    .connection-entry.confirmed {
+      border-left-color: var(--verdigris);
+      color: var(--verdigris);
+    }
+
+    /* ── CASE FILE PANEL ─────────────────────────────────────────── */
+    #casefile-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+
+    /* Newspaper-style illustration box */
+    .illustration-box {
+      border: 2px solid var(--rule);
+      margin-bottom: 14px;
+      position: relative;
+      background: var(--paper-dark);
+      overflow: hidden;
+    }
+    .illustration-box img {
+      width: 100%;
+      display: block;
+      filter: sepia(60%) contrast(1.1) brightness(0.95);
+      mix-blend-mode: multiply;
+    }
+    .illustration-caption {
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-faded);
+      text-align: center;
+      padding: 5px 8px;
+      border-top: 1px solid var(--rule-light);
+      font-style: italic;
+    }
+
+    .newspaper-column {
+      column-count: 1;
+      font-family: var(--font-text);
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+    .newspaper-column p { margin-bottom: 10px; }
+    .newspaper-column p:first-child::first-letter {
+      font-family: var(--font-display);
+      font-size: 3em;
+      font-weight: 900;
+      float: left;
+      line-height: 0.8;
+      margin: 4px 6px 0 0;
+      color: var(--ink);
+    }
+
+    .column-head {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--ink);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .column-deck {
+      font-family: var(--font-type);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-faded);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--rule-light);
+      padding-bottom: 8px;
+    }
+    .byline {
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-faded);
+      margin-bottom: 12px;
+    }
+
+    /* Pull-quote / highlight box */
+    .pull-quote {
+      border-top: 2px solid var(--rule);
+      border-bottom: 2px solid var(--rule);
+      padding: 10px 12px;
+      margin: 14px 0;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--ink-mid);
+      text-align: center;
+    }
+
+    /* Suspects grid */
+    .suspect-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--rule);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .suspect-mugshot {
+      width: 56px;
+      flex-shrink: 0;
+      background: var(--paper-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      border-right: 1px solid var(--rule-light);
+      filter: grayscale(1);
+    }
+    .suspect-info {
+      padding: 8px 10px;
+      flex: 1;
+    }
+    .suspect-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .suspect-detail {
+      font-family: var(--font-type);
+      font-size: 10px;
+      color: var(--ink-faded);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+    .suspect-status {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      margin-top: 4px;
+      display: inline-block;
+      border: 1px solid;
+    }
+    .status-free { color: var(--blood); border-color: var(--blood); }
+    .status-cleared { color: var(--ink-ghost); border-color: var(--ink-ghost); text-decoration: line-through; }
+
+    /* ── LOCATIONS PANEL ─────────────────────────────────────────── */
+    #locations-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+    .location-entry {
+      border: 1px solid var(--rule-light);
+      margin-bottom: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      display: flex;
+      flex-direction: column;
+    }
+    .location-entry:hover { border-color: var(--rule); }
+    .location-entry:active { background: var(--paper-dark); }
+    .location-head {
+      background: var(--paper-dark);
+      padding: 6px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--rule-light);
+    }
+    .location-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .location-district {
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-ghost);
+    }
+    .location-desc {
+      padding: 8px 10px;
+      font-family: var(--font-text);
+      font-size: 13px;
+      line-height: 1.55;
+      font-style: italic;
+      color: var(--ink-mid);
+    }
+    .location-action {
+      padding: 6px 10px;
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--verdigris-light);
+      border-top: 1px solid var(--rule-light);
+    }
+    .location-locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .location-locked .location-action { color: var(--ink-ghost); }
+
+    /* ── SETTINGS OVERLAY ────────────────────────────────────────── */
+    #settings-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(28,21,16,0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #settings-overlay.open { display: flex; }
+    .settings-box {
+      background: var(--paper);
+      border: 2px solid var(--rule);
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.4);
+    }
+    .settings-head {
+      background: var(--ink);
+      color: var(--paper-aged);
+      padding: 12px 16px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 700;
+    }
+    .settings-body { padding: 16px; }
+    .settings-label {
+      font-family: var(--font-type);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-faded);
+      margin-bottom: 4px;
+      margin-top: 12px;
+      display: block;
+    }
+    .settings-label:first-child { margin-top: 0; }
+    .settings-input {
+      width: 100%;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: var(--font-type);
+      font-size: 13px;
+      padding: 8px 10px;
+      outline: none;
+    }
+    .settings-input:focus { border-color: var(--ink); }
+    .settings-note {
+      font-family: var(--font-type);
+      font-size: 10px;
+      color: var(--ink-ghost);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .settings-btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .btn-primary {
+      flex: 1;
+      background: var(--ink);
+      color: var(--paper-aged);
+      border: none;
+      font-family: var(--font-type);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      flex: 1;
+      background: none;
+      color: var(--ink-faded);
+      border: 1px solid var(--rule-light);
+      font-family: var(--font-type);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    /* ── VERDICT / ACCUSATION OVERLAY ────────────────────────────── */
+    #verdict-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(28,21,16,0.9);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #verdict-overlay.open { display: flex; }
+    .verdict-box {
+      background: var(--paper);
+      border: 3px double var(--blood);
+      width: 100%;
+      padding: 0;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+    }
+    .verdict-head {
+      background: var(--blood);
+      color: var(--paper-aged);
+      padding: 14px 16px;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-style: italic;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .verdict-body { padding: 16px; }
+    .verdict-select {
+      width: 100%;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: var(--font-text);
+      font-size: 14px;
+      padding: 8px 10px;
+      outline: none;
+      margin-bottom: 10px;
+      appearance: none;
+    }
+    .verdict-theory {
+      width: 100%;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: var(--font-type);
+      font-size: 12px;
+      padding: 8px 10px;
+      resize: none;
+      height: 80px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    /* ── SCROLLBARS ──────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--rule-light); }
+
+    /* ── UTILITY ─────────────────────────────────────────────────── */
+    .hr-ornament {
+      text-align: center;
+      color: var(--rule-light);
+      font-family: var(--font-display);
+      font-size: 14px;
+      margin: 8px 0;
+      letter-spacing: 4px;
+    }
+    .badge-new {
+      display: inline-block;
+      background: var(--blood);
+      color: var(--paper-aged);
+      font-family: var(--font-type);
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1px 4px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* Quick action buttons */
+    .quick-actions {
+      display: flex;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--paper-dark);
+      border-bottom: 1px solid var(--rule-light);
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .quick-actions::-webkit-scrollbar { display: none; }
+    .quick-btn {
+      flex-shrink: 0;
+      background: var(--paper);
+      border: 1px solid var(--rule-light);
+      color: var(--ink-faded);
+      font-family: var(--font-type);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.1s;
+    }
+    .quick-btn:hover { border-color: var(--rule); color: var(--ink); }
+    .quick-btn:active { background: var(--ink); color: var(--paper-aged); }
+  </style>
 </head>
 <body>
+<div id="app">
 
-<div class="app-container">
-    <header class="header">
-        <div class="title">Holmes & Watson AI</div>
-        <button onclick="toggleSettings()" class="text-xl">⚙️</button>
-    </header>
-
-    <!-- CHAT TAB -->
-    <div id="tab-chat" class="tab-content active">
-        <div id="chat-box" class="chat-area">
-            <div class="msg msg-ai">
-                <p class="text-[10px] font-bold text-amber-800 uppercase mb-1">Dr. Watson</p>
-                Guten Morgen, Holmes. Ein herrlicher Tag in London, wenn man von dem dichten Nebel und den drei Morden im East End absieht. Ein Klient erwartet uns in der Baker Street. Er scheint äußerst <strong>rattled</strong> zu sein. Was sollen wir tun?
-            </div>
-        </div>
-        <div id="typing" class="hidden px-6 py-2">
-            <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-        </div>
-        <div class="input-bar">
-            <input type="text" id="user-input" placeholder="Frage Watson oder handle...">
-            <button onclick="handleSend()" class="send-btn">➔</button>
-        </div>
+  <!-- MASTHEAD -->
+  <header id="masthead">
+    <div class="masthead-top">
+      <span class="masthead-dateline" id="date-display">London, 4. März 1881</span>
+      <button class="masthead-settings-btn" onclick="openSettings()">Einstellungen</button>
     </div>
-
-    <!-- MIND PALACE TAB -->
-    <div id="tab-mind" class="tab-content">
-        <div class="p-6 flex-1 overflow-y-auto">
-            <h2 class="font-bold text-xl mb-6 text-stone-800 border-b pb-2">🧠 Gedankenpalast</h2>
-            <div id="clue-list" class="space-y-4">
-                <div class="msg msg-ai text-sm italic">Noch keine Beweise gesichert...</div>
-            </div>
-        </div>
+    <div class="masthead-title-block">
+      <span class="masthead-kicker">Ein Watson-Bericht &middot; Baker Street &middot; Bd. I</span>
+      <div class="masthead-title">Eine Studie in Scharlachrot</div>
     </div>
-
-    <!-- TRAVEL TAB -->
-    <div id="tab-travel" class="tab-content">
-        <div class="p-6 flex-1 overflow-y-auto">
-            <h2 class="font-bold text-xl mb-6 text-stone-800 border-b pb-2">🚖 Kutsche</h2>
-            <div class="grid gap-4">
-                <button onclick="travelTo('Baker Street 221B')" class="p-4 bg-white border rounded-xl text-left shadow-sm">
-                    <strong>Baker Street 221B</strong><br><span class="text-xs text-gray-500">Zuhause</span>
-                </button>
-                <button onclick="travelTo('Scotland Yard')" class="p-4 bg-white border rounded-xl text-left shadow-sm">
-                    <strong>Scotland Yard</strong><br><span class="text-xs text-gray-500">Lestrade besuchen</span>
-                </button>
-                <button onclick="travelTo('The Docks')" class="p-4 bg-white border rounded-xl text-left shadow-sm">
-                    <strong>Die Docks</strong><br><span class="text-xs text-gray-500">Ermittlungen am Wasser</span>
-                </button>
-            </div>
-        </div>
+    <div class="masthead-rule-ornament">
+      <span class="ornament-text">Das Spiel ist im Gange</span>
     </div>
+  </header>
 
-    <!-- NAV -->
-    <nav class="bottom-nav">
-        <button onclick="switchTab('chat')" id="btn-chat" class="nav-item active"><span class="text-xl">💬</span><span>Spiel</span></button>
-        <button onclick="switchTab('mind')" id="btn-mind" class="nav-item"><span class="text-xl">🧠</span><span>Beweise</span></button>
-        <button onclick="switchTab('travel')" id="btn-travel" class="nav-item"><span class="text-xl">🚖</span><span>Reisen</span></button>
-    </nav>
+  <!-- PHASE BANNER -->
+  <div id="phase-banner">Ermittlung lauft &mdash; Tatort Brixton Road</div>
 
-    <!-- SETTINGS -->
-    <div id="settings-ui" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
-        <div class="bg-white rounded-2xl p-6 w-full shadow-2xl">
-            <h3 class="font-bold text-xl mb-4">API Einstellungen</h3>
-            <p class="text-xs text-gray-600 mb-4">Geben Sie Ihren OpenAI API-Key ein. Der Key wird lokal gespeichert.</p>
-            <input type="password" id="api-key" class="w-full mb-4 p-3 border rounded-lg text-sm" placeholder="sk-...">
-            <button onclick="saveSettings()" class="w-full bg-stone-900 text-white p-3 rounded-lg font-bold mb-2">Speichern</button>
-            <button onclick="toggleSettings()" class="w-full text-stone-500 text-sm">Abbrechen</button>
-        </div>
+  <!-- TAB ROW -->
+  <div id="tab-row">
+    <button class="tab-btn active" onclick="switchTab('narrative')" id="btn-narrative">Bericht</button>
+    <button class="tab-btn" onclick="switchTab('evidence')" id="btn-evidence">Beweise <span id="evidence-count" style="display:none" class="badge-new">0</span></button>
+    <button class="tab-btn" onclick="switchTab('casefile')" id="btn-casefile">Akte</button>
+    <button class="tab-btn" onclick="switchTab('locations')" id="btn-locations">Orte</button>
+  </div>
+
+  <!-- PANEL: NARRATIVE (MAIN CHAT) -->
+  <div class="panel active" id="panel-narrative">
+    <div class="quick-actions" id="quick-actions">
+      <button class="quick-btn" onclick="quickAction('Untersuche den Raum')">Raum untersuchen</button>
+      <button class="quick-btn" onclick="quickAction('Befrage Watson')">Watson befragen</button>
+      <button class="quick-btn" onclick="quickAction('Sicherungsbeweis analysieren')">Beweise sichten</button>
+      <button class="quick-btn" onclick="quickAction('Was sind Ihre Schlussfolgerungen, Holmes?')">Schlussfolgerung</button>
+      <button class="quick-btn" onclick="openVerdict()">Anklage erheben</button>
     </div>
+    <div id="chat-area"></div>
+    <div id="typing-indicator">
+      <div class="type-dot"></div>
+      <div class="type-dot"></div>
+      <div class="type-dot"></div>
+      <span class="type-label">Watson schreibt</span>
+    </div>
+    <div id="input-bar">
+      <textarea id="user-input" placeholder="Ihre Anweisung, mein Herr..." rows="1"></textarea>
+      <button id="send-btn" onclick="handleSend()">Senden</button>
+    </div>
+  </div>
+
+  <!-- PANEL: EVIDENCE (MIND PALACE) -->
+  <div class="panel" id="panel-evidence">
+    <div id="evidence-panel">
+      <div class="section-head">Beweiskatalog</div>
+      <div id="evidence-list">
+        <div class="connection-entry" style="font-style:italic; color:var(--ink-ghost)">
+          Noch kein Beweis gesichert. Kehren Sie zur Ermittlung zurück.
+        </div>
+      </div>
+      <div id="deduction-board" style="margin-top:20px">
+        <div class="section-head">Schlussfolgerungskette</div>
+        <div id="deduction-list">
+          <div class="connection-entry" style="font-style:italic; color:var(--ink-ghost)">
+            Logische Verbindungen erscheinen hier, sobald Beweise verknupft werden.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: CASE FILE -->
+  <div class="panel" id="panel-casefile">
+    <div id="casefile-panel">
+
+      <!-- PRIMARY: Holmes portrait — Paget's iconic standing Holmes -->
+      <div class="illustration-box">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sherlock_Holmes_-_by_Sidney_Paget.jpg/320px-Sherlock_Holmes_-_by_Sidney_Paget.jpg"
+          alt="Sidney Paget: Sherlock Holmes"
+          onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Paget_holmes.png/320px-Paget_holmes.png'; this.onerror=null;"
+        >
+        <div class="illustration-caption">Sherlock Holmes &mdash; Zeichnung von Sidney Paget, The Strand Magazine, 1891</div>
+      </div>
+
+      <div class="column-head">Der Fall Brixton Road</div>
+      <div class="column-deck">Sonderausgabe &middot; Scotland Yard bittet um Diskretion</div>
+      <div class="byline">Niedergeschrieben von Dr. John H. Watson, M.D.</div>
+
+      <div class="newspaper-column" id="case-summary-text">
+        <p>Es war im Marze des Jahres 1881, als ich in die Baker Street 221B einzog, um mit meinem merkwurdigen Mitbewohner Sherlock Holmes das Quartier zu teilen. Die Stille unserer Tage wurde jah unterbrochen, als Inspektor Gregson von Scotland Yard erschien.</p>
+        <p>In einem leerstehenden Haus in der Brixton Road, Nummer 3 Lauriston Gardens, fand man die Leiche eines Herrn. Der Mann war wohlgekleidet, von stattlicher Gestalt, etwa funfzig Jahre alt. Keine Wunden, doch der Raum war mit Blutspritzern ubersaet.</p>
+        <p>Und an der Wand, mit Blut geschrieben, das einzige Wort: <strong>RACHE.</strong></p>
+      </div>
+
+      <!-- Holmes with pipe — Paget's Man with Twisted Lip illustration -->
+      <div class="illustration-box" style="margin-top:16px">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg/320px-Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg"
+          alt="Sidney Paget: Holmes in der Pfeife"
+          onerror="this.parentElement.style.display='none'"
+        >
+        <div class="illustration-caption">&ldquo;Er sass da, von Kopf bis Fuss in Rauch gehuellt&rdquo; &mdash; Paget, 1891</div>
+      </div>
+
+      <div class="pull-quote">
+        &ldquo;Wenn du das Unmogliche ausgeschlossen hast, muss das, was ubrig bleibt, die Wahrheit sein.&rdquo;
+      </div>
+
+      <!-- Suspects section with Paget illustration of Watson -->
+      <div class="section-head" style="margin-top:16px">Verdachtige Personen</div>
+      <div id="suspects-list"></div>
+
+      <!-- Watson portrait illustration -->
+      <div class="illustration-box" style="margin-top:16px">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg/320px-Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg"
+          alt="Sidney Paget: Holmes und Watson, Scandal in Bohemia"
+          onerror="this.parentElement.style.display='none'"
+        >
+        <div class="illustration-caption">Holmes und Watson &mdash; &ldquo;A Scandal in Bohemia&rdquo;, Paget, 1891</div>
+      </div>
+
+      <!-- Case facts table -->
+      <div class="section-head" style="margin-top:16px">Bekannte Tatortbefunde</div>
+      <div id="facts-table"></div>
+
+      <!-- Final Paget: Holmes investigating (The Speckled Band) -->
+      <div class="illustration-box" style="margin-top:20px">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg/320px-Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg"
+          alt="Sidney Paget: Holmes untersucht"
+          onerror="this.parentElement.style.display='none'"
+        >
+        <div class="illustration-caption">&ldquo;Holmes kniete nieder und untersuchte den Boden&rdquo; &mdash; Paget, 1892</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL: LOCATIONS -->
+  <div class="panel" id="panel-locations">
+    <div id="locations-panel">
+      <div class="section-head">Karte des Handlungsgebiets</div>
+      <div id="locations-list"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS OVERLAY -->
+  <div id="settings-overlay">
+    <div class="settings-box">
+      <div class="settings-head">Einstellungen des Berichterstatters</div>
+      <div class="settings-body">
+        <span class="settings-label">OpenAI API-Schlussel</span>
+        <input type="password" class="settings-input" id="api-key-input" placeholder="sk-...">
+        <p class="settings-note">Ihr Schlussel wird ausschliesslich lokal im Browser gespeichert und niemals ubertragen. Nur fur die KI-Narration benotigt.</p>
+        <span class="settings-label">Modell</span>
+        <select class="settings-input" id="model-select">
+          <option value="gpt-4o">GPT-4o (empfohlen)</option>
+          <option value="gpt-4o-mini">GPT-4o-mini (gunstig)</option>
+          <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        </select>
+        <div class="settings-btn-row">
+          <button class="btn-primary" onclick="saveSettings()">Speichern</button>
+          <button class="btn-secondary" onclick="closeSettings()">Abbrechen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERDICT OVERLAY -->
+  <div id="verdict-overlay">
+    <div class="verdict-box">
+      <div class="verdict-head">Anklage erheben</div>
+      <div class="verdict-body">
+        <p style="font-family:var(--font-text);font-size:13px;font-style:italic;margin-bottom:10px;color:var(--ink-mid)">Wessen Sie den Tater fur schuldig, mein Herr? Denken Sie sorgfaltig nach.</p>
+        <label class="settings-label">Ihr Verdachtiger</label>
+        <select class="verdict-select" id="verdict-suspect">
+          <option value="">-- Wahlen Sie einen Verdachtigen --</option>
+          <option value="Jefferson Hope">Jefferson Hope, Cab-Fahrer</option>
+          <option value="Arthur Charpentier">Arthur Charpentier, Marineleutnant</option>
+          <option value="Tobias Gregson">Tobias Gregson, Inspektor</option>
+          <option value="Anderer">Ein noch Unbekannter</option>
+        </select>
+        <label class="settings-label">Ihre Theorie (kurz)</label>
+        <textarea class="verdict-theory" id="verdict-theory" placeholder="Ich behaupte, dass..."></textarea>
+        <div class="settings-btn-row">
+          <button class="btn-primary" onclick="submitVerdict()">Anklage vortragen</button>
+          <button class="btn-secondary" onclick="closeVerdict()">Noch nicht bereit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+<!-- END APP -->
 
 <script>
-    let chatHistory = [
-        { role: "system", content: "Du bist der Spielleiter eines Sherlock Holmes Rollenspiels. Dein Stil ist viktorianisch, präzise und atmosphärisch. Du spielst Dr. Watson oder den Erzähler. Nutze gelegentlich viktorianischen Slang (z.B. 'afternoonified', 'the morbs'). Verwalte den Fortschritt des Spielers. Wenn der Spieler einen Beweis findet, erwähne ihn deutlich. Halte Antworten kurz und handlungsorientiert für mobile Geräte." }
-    ];
+// ══════════════════════════════════════════════════════════════════
+//  CASE DATA  —  "A Study in Scarlet"
+//  Ground Truth JSON. The LLM may only narrate; it cannot alter
+//  these facts. This is the "locked" canonical source.
+// ══════════════════════════════════════════════════════════════════
+var CASE = {
+  title: "Eine Studie in Scharlachrot",
+  year: 1881,
+  victim: {
+    name: "Enoch J. Drebber",
+    nationality: "Amerikanisch (aus Utah)",
+    description: "Wohlhabender Mann, ca. 50 Jahre, stattliche Gestalt, sorgfaltig gekleidet",
+    foundAt: "3 Lauriston Gardens, Brixton Road",
+    causeOfDeath: "Vergiftung (unbekanntes Gift)"
+  },
+  secondVictim: {
+    name: "Joseph Stangerson",
+    role: "Drebbers Sekretar",
+    foundAt: "Halliday's Private Hotel",
+    causeOfDeath: "Stichverletzung"
+  },
+  evidence: [
+    { id: "e1", tag: "physical", title: "Blutspuren ohne Wunde", desc: "Reichlich Blut im Zimmer, das nicht vom Opfer stammt. Der Tater hatte Nasenbluten aus Aufregung.", found: false },
+    { id: "e2", tag: "physical", title: "Schrift: RACHE", desc: "In deutschem Stil mit Blut an die Wand geschrieben. Nicht 'Rachel', sondern das deutsche Wort fur Rache.", found: false },
+    { id: "e3", tag: "physical", title: "Goldener Ehering", desc: "Ein Damenring, aufgefunden beim Bewegen der Leiche. Verbindung zu einer Frau aus dem Leben des Taters.", found: false },
+    { id: "e4", tag: "physical", title: "Zigarre: Trichinopoly", desc: "Asche einer langen Trichinopoly-Zigarre am Tatort. Markiert den Aufenthaltsort des Taters.", found: false },
+    { id: "e5", tag: "physical", title: "Kutschspuren im Schlamm", desc: "Vier-rades Gefahr, ein Pferd mit drei neuen und einem alten Hufeisen.", found: false },
+    { id: "e6", tag: "physical", title: "Fussspuren im Gartenweg", desc: "Fussstapfen deuten auf einen Mann von uber sechs Fuss Grosse, in quadratischen Stiefeln.", found: false },
+    { id: "e7", tag: "document", title: "Pillenschachtel (zwei Pillen)", desc: "Gefunden im Zimmer Stangersons. Eine harmlose, eine todliche Pille. Der Tater spielte Gott.", found: false },
+    { id: "e8", tag: "testimony", title: "Aussage: Charpentier-Streit", desc: "Arthur Charpentier (Marineleutnant) stritt mit Drebber. Seine Schwester Alice wurde von Drebber bestatigt.", found: false },
+    { id: "e9", tag: "testimony", title: "Telegramm aus Cleveland", desc: "Bestatigt, dass ein 'J.H.' in Europa unterwegs ist. Initialen stimmen mit Stangersons Notizen uberein.", found: false },
+    { id: "e10", tag: "physical", title: "Kutscherkennzeichnung", desc: "Cab-Nr. 2704, Fahrer: Jefferson Hope. Durch Baker Street Irregulars ermittelt.", found: false }
+  ],
+  suspects: [
+    { name: "Jefferson Hope", role: "Cab-Fahrer, fruher Grubenbauingenieur", status: "free", detail: "Aus Nevada. Fahrt Droschke in London. Verfolgt Drebber und Stangerson seit zwanzig Jahren." },
+    { name: "Arthur Charpentier", role: "Marineleutnant", status: "free", detail: "Sohn der Vermieterin von Drebber. Stritt mit dem Opfer wegen Belastigung seiner Schwester Alice." },
+    { name: "Tobias Gregson", role: "Inspektor, Scotland Yard", status: "cleared", detail: "Kompetent aber konventionell. Verhaftete Charpentier voreilig." }
+  ],
+  locations: [
+    { id: "l1", name: "Baker Street 221B", district: "Marylebone", desc: "Heimstatte von Holmes und Watson. Laboratorium, Archiv, Denkraum.", locked: false, action: "Ermittlungen besprechen" },
+    { id: "l2", name: "3 Lauriston Gardens", district: "Brixton", desc: "Das leerstehende Haus, in dem Drebbers Leiche gefunden wurde. Der Haupttatort.", locked: false, action: "Tatort inspizieren" },
+    { id: "l3", name: "Scotland Yard", district: "Westminster", desc: "Sitz der Metropolitanpolizei. Gregson und Lestrade haben dort ihr Buro.", locked: false, action: "Gregson befragen" },
+    { id: "l4", name: "Halliday's Private Hotel", district: "Little George Street", desc: "Hotel, in dem Stangersons Leiche gefunden wurde. Zweiter Tatort.", locked: false, action: "Stangersons Zimmer untersuchen" },
+    { id: "l5", name: "Opiumhohle (Upper Swandam Lane)", district: "City-Rand / Ost", desc: "Bekannter Treffpunkt der Londoner Unterwelt. Informanten sind hier zu finden.", locked: true, action: "Verkleidet eintreten" },
+    { id: "l6", name: "Charpentier-Pension", district: "Camberwell", desc: "Die Pension, in der Drebber logiert hatte. Frau Charpentier kann Auskunft geben.", locked: false, action: "Mrs. Charpentier befragen" }
+  ],
+  phases: ["Tatortbesichtigung", "Erste Verdachtige", "Beweiskatalog vollstandig", "Anklage erheben"],
+  currentPhase: 0,
+  solution: {
+    perpetrator: "Jefferson Hope",
+    motive: "Rache fur den Tod von Lucy Ferrier und John Ferrier in Utah, 1860. Drebber und Stangerson haben durch den Einfluss der Mormonen-Gemeinschaft Lucys Tod verursacht.",
+    method: "Vergiftung durch eine von zwei Pillen — eine harmlos, eine todlich. Hope uberliess dem Opfer den Zufall.",
+    verdict: "Hope starb in der Nacht nach seiner Festnahme an einem Aortenaneurysma. Die Gerechtigkeit vollzog sich auf ihre eigene Weise."
+  }
+};
 
-    function switchTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + id).classList.add('active');
-        document.getElementById('btn-' + id).classList.add('active');
+// ══════════════════════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════════════════════
+var G = {
+  evidence: [],        // Array of found evidence IDs
+  deductions: [],      // Array of deduction strings
+  visitedLocations: [],
+  chatHistory: [],
+  leadsUsed: 0,
+  caseStarted: false,
+  verdictGiven: false
+};
+
+// Persist state
+var LKEY = 'sherlock_asis_v1';
+function saveState() { try { localStorage.setItem(LKEY, JSON.stringify(G)); } catch(e) {} }
+function loadState() {
+  try {
+    var d = localStorage.getItem(LKEY);
+    if(d) G = Object.assign(G, JSON.parse(d));
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  SYSTEM PROMPT — The locked "Game Master" instructions
+// ══════════════════════════════════════════════════════════════════
+function buildSystemPrompt() {
+  var foundEvidenceText = G.evidence.length
+    ? G.evidence.map(function(id){
+        var ev = CASE.evidence.find(function(e){return e.id===id;});
+        return ev ? '- ' + ev.title + ': ' + ev.desc : '';
+      }).join('\n')
+    : 'Noch keine Beweise gesichert.';
+
+  var visitedText = G.visitedLocations.length
+    ? G.visitedLocations.join(', ')
+    : 'Noch kein Ort besucht.';
+
+  return [
+    "Du bist der Spielleiter (Erzahler) eines Sherlock Holmes Rollenspiels. Der Spieler spielt Sherlock Holmes selbst.",
+    "Das Spiel basiert auf dem kanonischen Fall 'A Study in Scarlet' (1881) von Arthur Conan Doyle.",
+    "",
+    "DEINE ROLLE:",
+    "- Du erzahlst als Dr. Watson (1. Person) oder als allwissender Erzahler.",
+    "- Dein Stil ist viktorianisch, literarisch, atmospharisch. Kurze Absatze. Keine modernen Wendungen.",
+    "- Du kannst NPCs wie Gregson, Lestrade, Mrs. Hudson, Zeugen spielen.",
+    "- Du gibst Hinweise durch Atmosphare, nie direkt.",
+    "- KEIN Deutsch fur viktorianischen Slang — verwende echten englischen viktorianischen Jargon: 'rattled', 'queer fish', 'the morbs'.",
+    "",
+    "UNVERANDERLICHE SPIELREGELN:",
+    "- Der Tater ist Jefferson Hope. Das wird NIEMALS direkt verraten, nur durch Beweise.",
+    "- Wenn der Spieler einen der kanonischen Beweise ergibt (Blutspuren, Schrift RACHE, Zigarrenasche, Kutschspuren, Ehering, Pillen), markiere dies deutlich mit: [BEWEIS GESICHERT: <Titel des Beweises>]",
+    "- Wenn der Spieler logisch schlussfolgert oder Fakten verbindet, markiere: [SCHLUSSFOLGERUNG: <kurz>]",
+    "- Halluziniere KEINE neuen Fakten, die nicht im Kanon sind.",
+    "- Wenn der Spieler direkt nach dem Tater fragt ohne Beweise: Watson reagiert ungewiss oder verweist auf unvollstandige Beweislage.",
+    "- Behalte Antworten unter 200 Worten.",
+    "",
+    "AKTUELLER SPIELSTAND:",
+    "Besuchte Orte: " + visitedText,
+    "Gesicherte Beweise:\n" + foundEvidenceText,
+    "Gefuhrte Ermittlungsschritte: " + G.leadsUsed,
+    "",
+    "Wenn du Beweise in deiner Antwort entdeckst oder der Spieler sie findet, weise Watson an, sie ins Notizbuch einzutragen (Marker: [BEWEIS GESICHERT: ...]).",
+    "Antworte auf Deutsch, im viktorianischen Stil."
+  ].join('\n');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  CHAT / NARRATIVE
+// ══════════════════════════════════════════════════════════════════
+function addMsg(type, speaker, html) {
+  var area = document.getElementById('chat-area');
+  var block = document.createElement('div');
+  block.className = 'msg-block msg-' + type;
+
+  if(type !== 'system') {
+    var head = document.createElement('div');
+    head.className = 'msg-speaker';
+    head.textContent = speaker;
+    block.appendChild(head);
+  }
+
+  var body = document.createElement('div');
+  body.className = 'msg-body';
+  body.innerHTML = html;
+  block.appendChild(body);
+
+  area.appendChild(block);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping(show) {
+  var el = document.getElementById('typing-indicator');
+  el.classList.toggle('visible', show);
+}
+
+async function handleSend() {
+  var input = document.getElementById('user-input');
+  var text = input.value.trim();
+  if(!text) return;
+
+  var key = localStorage.getItem('sh_openai_key');
+  if(!key) { openSettings(); return; }
+
+  addMsg('player', 'Holmes', escHtml(text));
+  input.value = '';
+  input.style.height = '';
+
+  G.leadsUsed++;
+  showTyping(true);
+
+  // Build messages array
+  var messages = [{ role: 'system', content: buildSystemPrompt() }];
+  // Append recent history (last 12 turns for context)
+  G.chatHistory.slice(-12).forEach(function(m){ messages.push(m); });
+  messages.push({ role: 'user', content: text });
+
+  var model = localStorage.getItem('sh_model') || 'gpt-4o';
+
+  try {
+    var resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: model, messages: messages, max_tokens: 350, temperature: 0.75 })
+    });
+    var data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
+
+    var raw = data.choices[0].message.content;
+    G.chatHistory.push({ role: 'user', content: text });
+    G.chatHistory.push({ role: 'assistant', content: raw });
+
+    showTyping(false);
+    processNarratorResponse(raw);
+    saveState();
+
+  } catch(err) {
+    showTyping(false);
+    addMsg('system', '', 'Telegraphenleitungsfehler: ' + escHtml(err.message));
+  }
+}
+
+function processNarratorResponse(raw) {
+  // Parse evidence markers
+  var evidencePattern = /\[BEWEIS GESICHERT:\s*([^\]]+)\]/gi;
+  var deductionPattern = /\[SCHLUSSFOLGERUNG:\s*([^\]]+)\]/gi;
+
+  var evMatches = [];
+  var match;
+  while((match = evidencePattern.exec(raw)) !== null) { evMatches.push(match[1].trim()); }
+
+  var dedMatches = [];
+  while((match = deductionPattern.exec(raw)) !== null) { dedMatches.push(match[1].trim()); }
+
+  // Strip markers from display text
+  var display = raw
+    .replace(/\[BEWEIS GESICHERT:[^\]]+\]/gi, '')
+    .replace(/\[SCHLUSSFOLGERUNG:[^\]]+\]/gi, '')
+    .trim();
+
+  // Determine message type
+  var msgType = evMatches.length > 0 ? 'evidence' : 'ai';
+  addMsg(msgType, 'Dr. Watson', formatNarratorText(display));
+
+  // Context-sensitive Paget illustration
+  checkForIllustrationTrigger(display);
+
+  // Auto-register evidence
+  evMatches.forEach(function(title) {
+    registerEvidenceByTitle(title);
+  });
+
+  // Auto-register deductions
+  dedMatches.forEach(function(ded) {
+    addDeduction(ded);
+  });
+
+  // Show evidence flash if found
+  if(evMatches.length > 0) {
+    evMatches.forEach(function(t) {
+      addMsg('evidence', 'Watson notiert', '<strong>[Beweis gesichert]</strong> ' + escHtml(t));
+    });
+    updateEvidenceBadge();
+  }
+}
+
+function formatNarratorText(text) {
+  // Bold important terms
+  return escHtml(text)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+
+function registerEvidenceByTitle(title) {
+  // Try to match against canonical evidence
+  var ev = CASE.evidence.find(function(e){
+    return e.title.toLowerCase().includes(title.toLowerCase().substring(0, 8)) ||
+           title.toLowerCase().includes(e.title.toLowerCase().substring(0, 8));
+  });
+  if(ev && !G.evidence.includes(ev.id)) {
+    G.evidence.push(ev.id);
+    renderEvidence();
+    updateEvidenceBadge();
+  }
+}
+
+function addDeduction(text) {
+  if(!G.deductions.includes(text)) {
+    G.deductions.push(text);
+    renderDeductions();
+  }
+}
+
+function updateEvidenceBadge() {
+  var badge = document.getElementById('evidence-count');
+  if(G.evidence.length > 0) {
+    badge.textContent = G.evidence.length;
+    badge.style.display = 'inline';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════════════════════════════
+function renderEvidence() {
+  var list = document.getElementById('evidence-list');
+  if(G.evidence.length === 0) return;
+
+  list.innerHTML = '';
+  G.evidence.forEach(function(id) {
+    var ev = CASE.evidence.find(function(e){return e.id===id;});
+    if(!ev) return;
+    var card = document.createElement('div');
+    card.className = 'evidence-card';
+    card.innerHTML =
+      '<div class="evidence-card-head">' +
+        '<span>' + escHtml(ev.title) + '</span>' +
+        '<span class="evidence-tag tag-' + ev.tag + '">' + tagLabel(ev.tag) + '</span>' +
+      '</div>' +
+      '<div class="evidence-card-body">' + escHtml(ev.desc) + '</div>';
+    list.appendChild(card);
+  });
+}
+
+function tagLabel(tag) {
+  if(tag === 'physical') return 'Körperlich';
+  if(tag === 'testimony') return 'Aussage';
+  if(tag === 'document') return 'Dokument';
+  return tag;
+}
+
+function renderDeductions() {
+  var list = document.getElementById('deduction-list');
+  list.innerHTML = '';
+  if(G.deductions.length === 0) {
+    list.innerHTML = '<div class="connection-entry" style="font-style:italic; color:var(--ink-ghost)">Noch keine Schlussfolgerungen.</div>';
+    return;
+  }
+  G.deductions.forEach(function(d) {
+    var el = document.createElement('div');
+    el.className = 'connection-entry confirmed';
+    el.textContent = d;
+    list.appendChild(el);
+  });
+}
+
+function renderSuspects() {
+  var list = document.getElementById('suspects-list');
+  list.innerHTML = '';
+  CASE.suspects.forEach(function(s) {
+    var row = document.createElement('div');
+    row.className = 'suspect-row';
+    var icon = s.name === 'Jefferson Hope' ? '&#x1F464;' : s.name === 'Arthur Charpentier' ? '&#x1F464;' : '&#x1F575;';
+    row.innerHTML =
+      '<div class="suspect-mugshot">' + icon + '</div>' +
+      '<div class="suspect-info">' +
+        '<div class="suspect-name">' + escHtml(s.name) + '</div>' +
+        '<div class="suspect-detail">' + escHtml(s.role) + '<br>' + escHtml(s.detail) + '</div>' +
+        '<span class="suspect-status status-' + s.status + '">' + (s.status === 'free' ? 'Verdachtig' : 'Entlastet') + '</span>' +
+      '</div>';
+    list.appendChild(row);
+  });
+}
+
+function renderFacts() {
+  var el = document.getElementById('facts-table');
+  var rows = [
+    ['Tatort', '3 Lauriston Gardens, Brixton Road'],
+    ['Opfer', 'Enoch J. Drebber, amerikanischer Staatsangehoriger'],
+    ['Todesursache', 'Ungeklart — kein sichtbares Trauma'],
+    ['Blut am Tatort', 'Reichlich; nicht vom Opfer'],
+    ['Inschrift', '"RACHE" — in Blut an der Wand'],
+    ['Tater-Grose', 'Uber 6 Fuss (Fussspuren)'],
+    ['Kutsche', 'Vierspannig; ein altes Hufeisen']
+  ];
+  el.innerHTML = rows.map(function(r){
+    return '<div style="display:flex;border-bottom:1px solid var(--rule-light);padding:6px 0">' +
+      '<span style="font-family:var(--font-type);font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-faded);width:100px;flex-shrink:0">' + r[0] + '</span>' +
+      '<span style="font-family:var(--font-text);font-size:13px;color:var(--ink)">' + r[1] + '</span>' +
+      '</div>';
+  }).join('');
+}
+
+function renderLocations() {
+  var list = document.getElementById('locations-list');
+  list.innerHTML = '';
+  CASE.locations.forEach(function(loc) {
+    var el = document.createElement('div');
+    el.className = 'location-entry' + (loc.locked ? ' location-locked' : '');
+    if(!loc.locked) {
+      el.onclick = function() { travelToLocation(loc); };
     }
+    el.innerHTML =
+      '<div class="location-head">' +
+        '<span class="location-name">' + escHtml(loc.name) + '</span>' +
+        '<span class="location-district">' + escHtml(loc.district) + '</span>' +
+      '</div>' +
+      '<div class="location-desc">' + escHtml(loc.desc) + '</div>' +
+      '<div class="location-action">' + (loc.locked ? 'Gesperrt — mehr Beweise benotigt' : '&#x21B3; ' + loc.action) + '</div>';
+    list.appendChild(el);
+  });
+}
 
-    function toggleSettings() { document.getElementById('settings-ui').classList.toggle('hidden'); }
+function travelToLocation(loc) {
+  if(!G.visitedLocations.includes(loc.name)) {
+    G.visitedLocations.push(loc.name);
+  }
+  switchTab('narrative');
+  var msg = 'Ich reise nach ' + loc.name + ' (' + loc.district + '). ' + loc.action + '.';
+  document.getElementById('user-input').value = msg;
+  handleSend();
+}
 
-    function saveSettings() {
-        const key = document.getElementById('api-key').value.trim();
-        if(key) {
-            localStorage.setItem('openai_key', key);
-            addMessage("System", "API-Key erfolgreich gespeichert. Du kannst jetzt die Ermittlung starten!");
-            toggleSettings();
-        }
+// ══════════════════════════════════════════════════════════════════
+//  UI CONTROLS
+// ══════════════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('btn-' + name).classList.add('active');
+}
+
+function quickAction(text) {
+  document.getElementById('user-input').value = text;
+  handleSend();
+}
+
+function openSettings() { document.getElementById('settings-overlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('open'); }
+
+function saveSettings() {
+  var key = document.getElementById('api-key-input').value.trim();
+  var model = document.getElementById('model-select').value;
+  if(key) localStorage.setItem('sh_openai_key', key);
+  localStorage.setItem('sh_model', model);
+  closeSettings();
+  if(key && !G.caseStarted) startCase();
+}
+
+function openVerdict() { document.getElementById('verdict-overlay').classList.add('open'); }
+function closeVerdict() { document.getElementById('verdict-overlay').classList.remove('open'); }
+
+function submitVerdict() {
+  var suspect = document.getElementById('verdict-suspect').value;
+  var theory = document.getElementById('verdict-theory').value.trim();
+  if(!suspect) { alert('Bitte einen Verdachtigen benennen.'); return; }
+  closeVerdict();
+  G.verdictGiven = true;
+  switchTab('narrative');
+
+  var msg = 'ANKLAGE: Ich beschuldige ' + suspect + '. ' + (theory || 'Das ist meine abschliessende Theorie.');
+  document.getElementById('user-input').value = msg;
+  handleSend();
+  saveState();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  UTILITY
+// ══════════════════════════════════════════════════════════════════
+function escHtml(s) {
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Auto-resize textarea
+document.getElementById('user-input').addEventListener('input', function() {
+  this.style.height = '';
+  this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+});
+
+// Enter to send (Shift+Enter for newline)
+document.getElementById('user-input').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+//  PAGET ILLUSTRATIONS — kontextsensitiv im Chat-Fluss
+//  Jede Illustration erscheint nur einmal (shownIllus-Guard).
+//  Alle Bilder: public domain, Sidney Paget / Wikimedia Commons.
+// ══════════════════════════════════════════════════════════════════
+var PAGET = {
+  opening: {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sherlock_Holmes_-_by_Sidney_Paget.jpg/280px-Sherlock_Holmes_-_by_Sidney_Paget.jpg',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Paget_holmes.png/280px-Paget_holmes.png',
+    caption: 'Sherlock Holmes — Baker Street 221B. Sidney Paget, The Strand Magazine, 1891'
+  },
+  brixton: {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg/280px-Sherlock_Holmes_-_The_Man_with_the_Twisted_Lip.jpg',
+    caption: '\u201eEr kniete nieder und untersuchte jeden Zentimeter des Bodens.\u201c \u2014 Paget, 1891'
+  },
+  watson: {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg/280px-Sherlock_Holmes_-_A_Scandal_in_Bohemia_-_Paget_1.jpg',
+    caption: 'Holmes und Watson \u2014 \u201eA Scandal in Bohemia\u201c, Paget, 1891'
+  },
+  interrogation: {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg/280px-Sherlock_Holmes_-_The_Adventure_of_the_Speckled_Band.jpg',
+    caption: '\u201eHolmes betrachtete ihn mit jenem ruhigen, durchdringenden Blick.\u201c \u2014 Paget, 1892'
+  },
+  deduction: {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Sherlock_Holmes_-_The_Naval_Treaty_2.jpg/280px-Sherlock_Holmes_-_The_Naval_Treaty_2.jpg',
+    caption: '\u201eSie werden finden, mein lieber Watson, dass ich selten irre.\u201c \u2014 Paget, 1893'
+  },
+  scotlandyard: {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Sherlock_Holmes_-_The_Adventure_of_the_Greek_Interpreter.jpg/280px-Sherlock_Holmes_-_The_Adventure_of_the_Greek_Interpreter.jpg',
+    caption: 'Begegnung mit den Behoerden \u2014 Paget, \u201eThe Greek Interpreter\u201c, 1893'
+  }
+};
+
+var shownIllus = {};
+
+function insertIllustration(key) {
+  if(shownIllus[key]) return;
+  var ill = PAGET[key];
+  if(!ill) return;
+  shownIllus[key] = true;
+
+  var area = document.getElementById('chat-area');
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'margin:6px 0 14px';
+
+  var box = document.createElement('div');
+  box.className = 'illustration-box';
+  box.style.margin = '0';
+
+  var img = document.createElement('img');
+  img.alt = ill.caption;
+  img.style.cssText = 'max-height:200px; object-fit:contain; background:var(--paper-dark); width:100%; display:block';
+
+  // Try primary src, fall back if needed
+  img.onerror = function() {
+    if(ill.fallback && this.src !== ill.fallback) {
+      this.src = ill.fallback;
+    } else {
+      this.parentElement.parentElement.style.display = 'none';
     }
+    this.onerror = null;
+  };
+  img.src = ill.src;
 
-    function addMessage(sender, text, isPlayer = false) {
-        const chat = document.getElementById('chat-box');
-        const div = document.createElement('div');
-        div.className = isPlayer ? "msg msg-player" : "msg msg-ai";
-        
-        if(!isPlayer) {
-            div.innerHTML = `<p class="text-[10px] font-bold text-amber-800 uppercase mb-1">${sender}</p>${text}`;
-        } else {
-            div.innerText = text;
-        }
-        
-        chat.appendChild(div);
-        chat.scrollTop = chat.scrollHeight;
+  var cap = document.createElement('div');
+  cap.className = 'illustration-caption';
+  cap.textContent = ill.caption;
+
+  box.appendChild(img);
+  box.appendChild(cap);
+  wrap.appendChild(box);
+  area.appendChild(wrap);
+  area.scrollTop = area.scrollHeight;
+}
+
+// Trigger illustrations based on keywords in AI responses or player actions
+function checkForIllustrationTrigger(text) {
+  var t = text.toLowerCase();
+  if(t.includes('brixton') || t.includes('lauriston') || t.includes('tatort') || t.includes('leiche') || t.includes('blut')) {
+    insertIllustration('brixton');
+  } else if(t.includes('scotland yard') || t.includes('gregson') || t.includes('lestrade')) {
+    insertIllustration('scotlandyard');
+  } else if(t.includes('befrag') || t.includes('verhor') || t.includes('verdachtig') || t.includes('zeuge')) {
+    insertIllustration('interrogation');
+  } else if(t.includes('schlussfolger') || t.includes('theorie') || t.includes('anklage') || t.includes('tater')) {
+    insertIllustration('deduction');
+  } else if(t.includes('watson') || t.includes('baker street') || t.includes('221b') || t.includes('notiz')) {
+    insertIllustration('watson');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  INITIALIZATION
+// ══════════════════════════════════════════════════════════════════
+function startCase() {
+  G.caseStarted = true;
+
+  // Opening Paget illustration — the canonical Holmes portrait
+  insertIllustration('opening');
+
+  // Opening Watson narration (no API call — deterministic opening)
+  var opening = [
+    'Es war an einem tr\u00fcben Morgen des Jahres 1881, als Inspektor Gregson von Scotland Yard in unsere Behausung trat und Holmes aus seiner Kontemplation riss.',
+    '<strong>\u201eEin merkw\u00fcrdiger Fall, Holmes,\u201c</strong> sagte er, den Hut in den H\u00e4nden drehend. <strong>\u201eLauriston Gardens, Brixton Road. Eine Leiche \u2014 kein Trauma, doch Blut \u00fcberall. Und an der Wand... ein einziges Wort.\u201c</strong>',
+    'Holmes war bereits auf den Beinen und griff nach Mantel und Lupe. <strong>\u201eKommen Sie, Watson. Die Arbeit ruft.\u201c</strong>',
+    'Was wird Ihre erste Handlung, Holmes?'
+  ].join('<br><br>');
+
+  addMsg('ai', 'Dr. Watson', opening);
+}
+
+function init() {
+  loadState();
+
+  // Render static content
+  renderSuspects();
+  renderFacts();
+  renderLocations();
+  renderEvidence();
+  renderDeductions();
+
+  // Load settings into form
+  var savedKey = localStorage.getItem('sh_openai_key') || '';
+  var savedModel = localStorage.getItem('sh_model') || 'gpt-4o';
+  if(savedKey) document.getElementById('api-key-input').value = savedKey;
+  document.getElementById('model-select').value = savedModel;
+
+  // Set date
+  document.getElementById('date-display').textContent = 'London, 4. Marz 1881 &mdash; Tag der Entdeckung';
+
+  // Start or resume
+  if(!G.caseStarted) {
+    if(savedKey) {
+      startCase();
+    } else {
+      addMsg('system', '', 'Bitte hinterlegen Sie Ihren OpenAI API-Schlüssel in den Einstellungen, um die Ermittlung zu beginnen.');
+      openSettings();
     }
-
-    async function handleSend() {
-        const input = document.getElementById('user-input');
-        const text = input.value.trim();
-        const key = localStorage.getItem('openai_key');
-
-        if(!text) return;
-        if(!key) {
-            toggleSettings();
-            return;
-        }
-
-        addMessage("Du", text, true);
-        input.value = "";
-        document.getElementById('typing').classList.remove('hidden');
-
-        chatHistory.push({ role: "user", content: text });
-
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${key}`
-                },
-                body: JSON.stringify({
-                    model: "gpt-4o",
-                    messages: chatHistory,
-                    max_tokens: 250
-                })
-            });
-
-            const data = await response.json();
-            
-            if(data.error) throw new Error(data.error.message);
-
-            const aiText = data.choices[0].message.content;
-            chatHistory.push({ role: "assistant", content: aiText });
-            
-            document.getElementById('typing').classList.add('hidden');
-            addMessage("Watson", aiText);
-
-            // Simple Logic to "detect" clues for the UI
-            if(aiText.toLowerCase().includes("beweis") || aiText.toLowerCase().includes("fund")) {
-                updateMindPalace(aiText);
-            }
-
-        } catch (err) {
-            document.getElementById('typing').classList.add('hidden');
-            addMessage("System", "Fehler: " + err.message);
-        }
+  } else {
+    // Restore previous session message
+    if(G.chatHistory.length > 0) {
+      // Show resume message
+      addMsg('system', '', '— Ermittlung fortgesetzt. Bisher ' + G.leadsUsed + ' Schritte, ' + G.evidence.length + ' Beweise gesichert. —');
+      updateEvidenceBadge();
+    } else {
+      startCase();
     }
+  }
+}
 
-    function updateMindPalace(text) {
-        const list = document.getElementById('clue-list');
-        // Extrahiert hypothetisch einen Beweisnamen
-        const clueDiv = document.createElement('div');
-        clueDiv.className = "bg-white p-4 rounded-xl border border-amber-200 shadow-sm border-l-4 border-l-amber-600";
-        clueDiv.innerHTML = `<p class="text-sm font-bold">Neuer Hinweis!</p><p class="text-xs text-gray-600">${text.substring(0, 50)}...</p>`;
-        if(list.innerText.includes("Noch keine")) list.innerHTML = "";
-        list.prepend(clueDiv);
-    }
-
-    function travelTo(loc) {
-        const input = document.getElementById('user-input');
-        input.value = `Ich reise nach: ${loc}`;
-        handleSend();
-        switchTab('chat');
-    }
-
-    // Enter Key
-    document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
-    
-    // Load Key
-    window.onload = () => {
-        const saved = localStorage.getItem('openai_key');
-        if(saved) document.getElementById('api-key').value = saved;
-    };
+window.addEventListener('load', init);
 </script>
-
 </body>
 </html>
-
