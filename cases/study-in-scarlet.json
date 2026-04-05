@@ -1,0 +1,198 @@
+{
+  "id": "study-in-scarlet",
+  "title": "Eine Studie in Scharlachrot",
+  "year": 1881,
+  "setting": "London, März 1881",
+
+  "victim": {
+    "name": "Enoch J. Drebber",
+    "nationality": "Amerikanisch (aus Utah)",
+    "description": "Wohlhabender Mann, ca. 50 Jahre, stattliche Gestalt, sorgfältig gekleidet",
+    "foundAt": "3 Lauriston Gardens, Brixton Road",
+    "causeOfDeath": "Vergiftung (unbekanntes Gift)"
+  },
+
+  "secondVictim": {
+    "name": "Joseph Stangerson",
+    "role": "Drebbers Sekretär",
+    "foundAt": "Halliday's Private Hotel",
+    "causeOfDeath": "Stichverletzung"
+  },
+
+  "evidence": [
+    {
+      "id": "e1", "tag": "physical",
+      "title": "Blutspuren ohne Wunde",
+      "desc": "Reichlich Blut im Zimmer, das nicht vom Opfer stammt. Der Täter hatte Nasenbluten aus Aufregung.",
+      "location": "l2",
+      "trigger": "inspect",
+      "keywords": ["blut","boden","spuren","untersuche","schau","zimmer","knie"],
+      "watson_hint": "Der Boden des Zimmers verrät mehr als die Wände, Holmes.",
+      "found": false
+    },
+    {
+      "id": "e2", "tag": "physical",
+      "title": "Schrift: RACHE",
+      "desc": "In deutschem Stil mit Blut an die Wand geschrieben. Nicht 'Rachel', sondern das deutsche Wort für Rache.",
+      "location": "l2",
+      "trigger": "inspect",
+      "keywords": ["wand","schrift","buchstaben","rache","rachel","wort","schreib"],
+      "watson_hint": "Die Inschrift an der Wand verdient Ihre volle Aufmerksamkeit.",
+      "found": false
+    },
+    {
+      "id": "e3", "tag": "physical",
+      "title": "Goldener Ehering",
+      "desc": "Ein Damenring, aufgefunden beim Bewegen der Leiche. Verbindung zu einer Frau.",
+      "location": "l2",
+      "trigger": "specific",
+      "keywords": ["leiche","bewege","tasche","durchsuche","ring","kleidung","körper"],
+      "watson_hint": null,
+      "found": false
+    },
+    {
+      "id": "e4", "tag": "physical",
+      "title": "Zigarre: Trichinopoly",
+      "desc": "Asche einer langen Trichinopoly-Zigarre am Tatort.",
+      "location": "l2",
+      "trigger": "inspect",
+      "keywords": ["asche","zigarre","rauch","boden","ecke"],
+      "watson_hint": "Raucher hinterlassen stets Spuren, Holmes.",
+      "found": false
+    },
+    {
+      "id": "e5", "tag": "physical",
+      "title": "Kutschspuren im Schlamm",
+      "desc": "Vierrädriges Gefährt, ein Pferd mit drei neuen und einem alten Hufeisen.",
+      "location": "l2",
+      "trigger": "inspect",
+      "keywords": ["außen","garten","straße","schlamm","spuren","rad","kutsch","pferd"],
+      "watson_hint": "Der Weg vor dem Haus erzählt seine eigene Geschichte.",
+      "found": false
+    },
+    {
+      "id": "e6", "tag": "physical",
+      "title": "Fußspuren im Gartenweg",
+      "desc": "Fußstapfen eines Mannes von über sechs Fuß Größe, in quadratischen Stiefeln.",
+      "location": "l2",
+      "trigger": "inspect",
+      "keywords": ["fußspuren","abdruck","stiefel","weg","pfad","schritt"],
+      "watson_hint": "Im aufgeweichten Boden lässt sich manches ablesen.",
+      "found": false
+    },
+    {
+      "id": "e7", "tag": "document",
+      "title": "Pillenschachtel (zwei Pillen)",
+      "desc": "Gefunden im Zimmer Stangersons. Eine harmlose, eine tödliche Pille.",
+      "location": "l4",
+      "trigger": "inspect",
+      "keywords": ["schachtel","pille","medizin","tasche","nachttisch","tisch","schublade"],
+      "watson_hint": "Stangersons Habseligkeiten könnten einen Schlüssel enthalten.",
+      "found": false
+    },
+    {
+      "id": "e8", "tag": "testimony",
+      "title": "Aussage: Charpentier-Streit",
+      "desc": "Arthur Charpentier stritt lautstark mit Drebber. Schwester Alice belästigt.",
+      "location": "l6",
+      "trigger": "talk",
+      "keywords": ["streit","alice","tochter","charpentier","arthur","schwester","drebber"],
+      "watson_hint": "Mrs. Charpentier weiß mehr als sie zugibt.",
+      "found": false
+    },
+    {
+      "id": "e9", "tag": "testimony",
+      "title": "Telegramm aus Cleveland",
+      "desc": "Bestätigt, dass ein 'J.H.' in Europa unterwegs ist.",
+      "location": "l3",
+      "trigger": "talk",
+      "keywords": ["telegramm","cleveland","america","j.h","initialen","nachricht"],
+      "watson_hint": "Gregson hat Informationen aus Amerika erhalten.",
+      "found": false
+    },
+    {
+      "id": "e10", "tag": "physical",
+      "title": "Cab-Nr. 2704 — Jefferson Hope",
+      "desc": "Fahrer Jefferson Hope, Cab-Nr. 2704. Durch Baker Street Irregulars ermittelt.",
+      "location": null,
+      "trigger": "combine",
+      "requires": ["e5","e6"],
+      "keywords": ["droschke","cab","fahrer","kutsche","suche","irregulars","wiggins"],
+      "watson_hint": null,
+      "found": false
+    }
+  ],
+
+  "locationEvidence": {
+    "l2": ["e1","e2","e3","e4","e5","e6"],
+    "l3": ["e9"],
+    "l4": ["e7"],
+    "l6": ["e8"]
+  },
+
+  "suspects": [
+    {
+      "name": "Jefferson Hope",
+      "role": "Cab-Fahrer, früher Grubenbauingenieur",
+      "status": "free",
+      "detail": "Aus Nevada. Fährt Droschke in London. Verfolgt Drebber und Stangerson seit zwanzig Jahren."
+    },
+    {
+      "name": "Arthur Charpentier",
+      "role": "Marineleutnant",
+      "status": "free",
+      "detail": "Sohn der Vermieterin. Stritt mit dem Opfer wegen Belästigung seiner Schwester Alice."
+    },
+    {
+      "name": "Tobias Gregson",
+      "role": "Inspektor, Scotland Yard",
+      "status": "cleared",
+      "detail": "Kompetent aber konventionell. Verhaftete Charpentier voreilig."
+    }
+  ],
+
+  "locations": [
+    { "id": "l1", "name": "Baker Street 221B", "district": "Marylebone",
+      "desc": "Heimstätte von Holmes und Watson. Laboratorium, Archiv, Denkraum.",
+      "locked": false, "action": "Ermittlungen besprechen" },
+    { "id": "l2", "name": "3 Lauriston Gardens", "district": "Brixton",
+      "desc": "Das leerstehende Haus, in dem Drebbers Leiche gefunden wurde.",
+      "locked": false, "action": "Tatort inspizieren" },
+    { "id": "l3", "name": "Scotland Yard", "district": "Westminster",
+      "desc": "Sitz der Metropolitanpolizei. Gregson und Lestrade.",
+      "locked": false, "action": "Gregson befragen" },
+    { "id": "l4", "name": "Halliday's Private Hotel", "district": "Little George Street",
+      "desc": "Hotel, in dem Stangersons Leiche gefunden wurde.",
+      "locked": false, "action": "Stangersons Zimmer untersuchen" },
+    { "id": "l5", "name": "Opiumhöhle (Upper Swandam Lane)", "district": "City-Rand",
+      "desc": "Treffpunkt der Londoner Unterwelt.",
+      "locked": true, "action": "Verkleidet eintreten",
+      "unlockRequires": ["e5","e6"] },
+    { "id": "l6", "name": "Charpentier-Pension", "district": "Camberwell",
+      "desc": "Die Pension, in der Drebber logiert hatte.",
+      "locked": false, "action": "Mrs. Charpentier befragen" }
+  ],
+
+  "phases": [
+    { "id": "crime_scene",   "label": "Tatortbesichtigung",     "requires": [] },
+    { "id": "first_leads",   "label": "Erste Ermittlungen",     "requires": ["e1","e2"] },
+    { "id": "deep_inquiry",  "label": "Tiefe Ermittlung",       "requires": ["e1","e2","e5","e6"] },
+    { "id": "closing_in",    "label": "Schlinge zieht sich zu", "requires": ["e1","e2","e3","e5","e6","e7"] },
+    { "id": "ready",         "label": "Bereit zur Anklage",     "requires": ["e1","e2","e3","e5","e6","e7","e10"] }
+  ],
+
+  "solution": {
+    "perpetrator": "Jefferson Hope",
+    "motive": "Rache für den Tod von Lucy Ferrier und John Ferrier in Utah, 1860.",
+    "method": "Vergiftung durch eine von zwei Pillen — eine harmlos, eine tödlich.",
+    "verdict": "Hope starb in der Nacht nach seiner Festnahme an einem Aortenaneurysma."
+  },
+
+  "watson_persona": "Du bist Dr. Watson, 1881. Militärisch, loyal, bewundernd. Britischer Understatement-Humor. Gelegentlich viktorianischer Slang.",
+
+  "irregulars_hints": [
+    "Wiggins kratzte sich den Kopf. 'Ey Mr. Holmes, der Cab-Fahrer der Nacht — groß wie ein Baum. Nie vorher in der Gegend gesehen.'",
+    "'Mr. Holmes,' flüsterte Wiggins, 'die Leute in Brixton sagen, die Kutsche stand dort schon eine Stunde vor Mitternacht.'",
+    "'Hab was rausgefunden, Mr. Holmes,' grinste Wiggins. 'Cab-Nr. 2704. Der Fahrer heißt Hope. Jefferson Hope. Aus Amerika.'"
+  ]
+}
