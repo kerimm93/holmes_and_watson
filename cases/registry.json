@@ -1,0 +1,875 @@
+[
+  {
+    "id": "the-adventures-of-sherlock-holmes",
+    "caseType": "collection",
+    "title": "Die Abenteuer des Sherlock Holmes",
+    "originalTitle": "The Adventures of Sherlock Holmes",
+    "year": 1892,
+    "status": "locked",
+    "stories": [
+      {
+        "id": "a-scandal-in-bohemia",
+        "caseType": "short",
+        "title": "Ein Skandal in Böhmen",
+        "originalTitle": "A Scandal in Bohemia",
+        "year": 1891,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-red-headed-league",
+        "caseType": "short",
+        "title": "Der Bund der Rothaarigen",
+        "originalTitle": "The Red-Headed League",
+        "year": 1891,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "a-case-of-identity",
+        "caseType": "short",
+        "title": "Eine Frage der Identität",
+        "originalTitle": "A Case of Identity",
+        "year": 1891,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-boscombe-valley-mystery",
+        "caseType": "short",
+        "title": "Das Geheimnis vom Boscombe-Tal",
+        "originalTitle": "The Boscombe Valley Mystery",
+        "year": 1891,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-five-orange-pips",
+        "caseType": "short",
+        "title": "Die fünf Orangenkerne",
+        "originalTitle": "The Five Orange Pips",
+        "year": 1891,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-man-with-the-twisted-lip",
+        "caseType": "short",
+        "title": "Der Mann mit der entstellten Lippe",
+        "originalTitle": "The Man with the Twisted Lip",
+        "year": 1891,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-blue-carbuncle",
+        "caseType": "short",
+        "title": "Der blaue Karfunkel",
+        "originalTitle": "The Adventure of the Blue Carbuncle",
+        "year": 1892,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-speckled-band",
+        "caseType": "short",
+        "title": "Das gesprenkelte Band",
+        "originalTitle": "The Adventure of the Speckled Band",
+        "year": 1892,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-engineers-thumb",
+        "caseType": "short",
+        "title": "Der Daumen des Ingenieurs",
+        "originalTitle": "The Adventure of the Engineer's Thumb",
+        "year": 1892,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-noble-bachelor",
+        "caseType": "short",
+        "title": "Der adlige Junggeselle",
+        "originalTitle": "The Adventure of the Noble Bachelor",
+        "year": 1892,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-beryl-coronet",
+        "caseType": "short",
+        "title": "Die Beryll-Krone",
+        "originalTitle": "The Adventure of the Beryl Coronet",
+        "year": 1892,
+        "collection": "Adventures",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-copper-beeches",
+        "caseType": "short",
+        "title": "Das Haus bei den Blutbuchen",
+        "originalTitle": "The Adventure of the Copper Beeches",
+        "year": 1892,
+        "collection": "Adventures",
+        "status": "locked"
+      }
+    ]
+  },
+  {
+    "id": "the-memoirs-of-sherlock-holmes",
+    "caseType": "collection",
+    "title": "Die Memoiren des Sherlock Holmes",
+    "originalTitle": "The Memoirs of Sherlock Holmes",
+    "year": 1894,
+    "status": "locked",
+    "stories": [
+      {
+        "id": "silver-blaze",
+        "caseType": "short",
+        "title": "Silberstern",
+        "originalTitle": "Silver Blaze",
+        "year": 1892,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-yellow-face",
+        "caseType": "short",
+        "title": "Das gelbe Gesicht",
+        "originalTitle": "The Adventure of the Yellow Face",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-stockbrokers-clerk",
+        "caseType": "short",
+        "title": "Der Angestellte des Börsenmaklers",
+        "originalTitle": "The Adventure of the Stockbroker's Clerk",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-gloria-scott",
+        "caseType": "short",
+        "title": "Die Gloria Scott",
+        "originalTitle": "The Adventure of the Gloria Scott",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-musgrave-ritual",
+        "caseType": "short",
+        "title": "Das Musgrave-Ritual",
+        "originalTitle": "The Adventure of the Musgrave Ritual",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-reigate-squire",
+        "caseType": "short",
+        "title": "Die Junker von Reigate",
+        "originalTitle": "The Adventure of the Reigate Squire",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-crooked-man",
+        "caseType": "short",
+        "title": "Der Verwachsene",
+        "originalTitle": "The Adventure of the Crooked Man",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-resident-patient",
+        "caseType": "short",
+        "title": "Der niedergelassene Patient",
+        "originalTitle": "The Adventure of the Resident Patient",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-greek-interpreter",
+        "caseType": "short",
+        "title": "Der griechische Dolmetscher",
+        "originalTitle": "The Adventure of the Greek Interpreter",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-naval-treaty",
+        "caseType": "short",
+        "title": "Der Flottenvertrag",
+        "originalTitle": "The Adventure of the Naval Treaty",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      },
+      {
+        "id": "the-final-problem",
+        "caseType": "short",
+        "title": "Das letzte Problem",
+        "originalTitle": "The Final Problem",
+        "year": 1893,
+        "collection": "Memoirs",
+        "status": "locked"
+      }
+    ]
+  },
+  {
+    "id": "the-return-of-sherlock-holmes",
+    "caseType": "collection",
+    "title": "Die Rückkehr des Sherlock Holmes",
+    "originalTitle": "The Return of Sherlock Holmes",
+    "year": 1905,
+    "status": "locked",
+    "stories": [
+      {
+        "id": "the-adventure-of-the-empty-house",
+        "caseType": "short",
+        "title": "Das leere Haus",
+        "originalTitle": "The Adventure of the Empty House",
+        "year": 1903,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-norwood-builder",
+        "caseType": "short",
+        "title": "Der Baumeister aus Norwood",
+        "originalTitle": "The Adventure of the Norwood Builder",
+        "year": 1903,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-dancing-men",
+        "caseType": "short",
+        "title": "Die tanzenden Männchen",
+        "originalTitle": "The Adventure of the Dancing Men",
+        "year": 1903,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-solitary-cyclist",
+        "caseType": "short",
+        "title": "Die einsame Radfahrerin",
+        "originalTitle": "The Adventure of the Solitary Cyclist",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-priory-school",
+        "caseType": "short",
+        "title": "Die Abtei-Schule",
+        "originalTitle": "The Adventure of the Priory School",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-black-peter",
+        "caseType": "short",
+        "title": "Der Schwarze Peter",
+        "originalTitle": "The Adventure of Black Peter",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-charles-augustus-milverton",
+        "caseType": "short",
+        "title": "Charles Augustus Milverton",
+        "originalTitle": "The Adventure of Charles Augustus Milverton",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-six-napoleons",
+        "caseType": "short",
+        "title": "Die sechs Napoleons",
+        "originalTitle": "The Adventure of the Six Napoleons",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-three-students",
+        "caseType": "short",
+        "title": "Die drei Studenten",
+        "originalTitle": "The Adventure of the Three Students",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-golden-pince-nez",
+        "caseType": "short",
+        "title": "Der goldene Kneifer",
+        "originalTitle": "The Adventure of the Golden Pince-Nez",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-missing-three-quarter",
+        "caseType": "short",
+        "title": "Der verschollene Three-Quarter",
+        "originalTitle": "The Adventure of the Missing Three-Quarter",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-abbey-grange",
+        "caseType": "short",
+        "title": "Abbey Grange",
+        "originalTitle": "The Adventure of the Abbey Grange",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-second-stain",
+        "caseType": "short",
+        "title": "Der zweite Fleck",
+        "originalTitle": "The Adventure of the Second Stain",
+        "year": 1904,
+        "collection": "Return",
+        "status": "locked"
+      }
+    ]
+  },
+  {
+    "id": "his-last-bow",
+    "caseType": "collection",
+    "title": "Seine Abschiedsvorstellung",
+    "originalTitle": "His Last Bow",
+    "year": 1917,
+    "status": "locked",
+    "stories": [
+      {
+        "id": "the-adventure-of-wisteria-lodge",
+        "caseType": "short",
+        "title": "Wisteria Lodge",
+        "originalTitle": "The Adventure of Wisteria Lodge",
+        "year": 1908,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-cardboard-box",
+        "caseType": "short",
+        "title": "Die Pappschachtel",
+        "originalTitle": "The Adventure of the Cardboard Box",
+        "year": 1893,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-red-circle",
+        "caseType": "short",
+        "title": "Der Rote Kreis",
+        "originalTitle": "The Adventure of the Red Circle",
+        "year": 1911,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-bruce-partington-plans",
+        "caseType": "short",
+        "title": "Die Bruce-Partington-Pläne",
+        "originalTitle": "The Adventure of the Bruce-Partington Plans",
+        "year": 1908,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-dying-detective",
+        "caseType": "short",
+        "title": "Der Detektiv auf dem Sterbebett",
+        "originalTitle": "The Adventure of the Dying Detective",
+        "year": 1913,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "the-disappearance-of-lady-frances-carfax",
+        "caseType": "short",
+        "title": "Das Verschwinden der Lady Frances Carfax",
+        "originalTitle": "The Disappearance of Lady Frances Carfax",
+        "year": 1911,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-devils-foot",
+        "caseType": "short",
+        "title": "Der Teufelsfuß",
+        "originalTitle": "The Adventure of the Devil's Foot",
+        "year": 1910,
+        "collection": "His Last Bow",
+        "status": "locked"
+      },
+      {
+        "id": "his-last-bow-story",
+        "caseType": "short",
+        "title": "Seine Abschiedsvorstellung",
+        "originalTitle": "His Last Bow",
+        "year": 1917,
+        "collection": "His Last Bow",
+        "status": "locked"
+      }
+    ]
+  },
+  {
+    "id": "the-case-book-of-sherlock-holmes",
+    "caseType": "collection",
+    "title": "Sherlock Holmes Buch der Fälle",
+    "originalTitle": "The Case-Book of Sherlock Holmes",
+    "year": 1927,
+    "status": "locked",
+    "stories": [
+      {
+        "id": "the-adventure-of-the-illustrious-client",
+        "caseType": "short",
+        "title": "Der illustre Klient",
+        "originalTitle": "The Adventure of the Illustrious Client",
+        "year": 1925,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-blanched-soldier",
+        "caseType": "short",
+        "title": "Der erbleichte Soldat",
+        "originalTitle": "The Adventure of the Blanched Soldier",
+        "year": 1926,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-mazarin-stone",
+        "caseType": "short",
+        "title": "Der Mazarin-Stein",
+        "originalTitle": "The Adventure of the Mazarin Stone",
+        "year": 1921,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-three-gables",
+        "caseType": "short",
+        "title": "Die drei Giebel",
+        "originalTitle": "The Adventure of the Three Gables",
+        "year": 1926,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-sussex-vampire",
+        "caseType": "short",
+        "title": "Der Vampir von Sussex",
+        "originalTitle": "The Adventure of the Sussex Vampire",
+        "year": 1924,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-three-garridebs",
+        "caseType": "short",
+        "title": "Die drei Garridebs",
+        "originalTitle": "The Adventure of the Three Garridebs",
+        "year": 1925,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-problem-of-thor-bridge",
+        "caseType": "short",
+        "title": "Das Rätsel der Thor-Brücke",
+        "originalTitle": "The Problem of Thor Bridge",
+        "year": 1922,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-creeping-man",
+        "caseType": "short",
+        "title": "Der Mann mit dem geduckten Gang",
+        "originalTitle": "The Adventure of the Creeping Man",
+        "year": 1923,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-lions-mane",
+        "caseType": "short",
+        "title": "Die Löwenmähne",
+        "originalTitle": "The Adventure of the Lion's Mane",
+        "year": 1926,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-veiled-lodger",
+        "caseType": "short",
+        "title": "Die verschleierte Mieterin",
+        "originalTitle": "The Adventure of the Veiled Lodger",
+        "year": 1927,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-shoscombe-old-place",
+        "caseType": "short",
+        "title": "Shoscombe Old Place",
+        "originalTitle": "The Adventure of Shoscombe Old Place",
+        "year": 1927,
+        "collection": "Case-Book",
+        "status": "locked"
+      },
+      {
+        "id": "the-adventure-of-the-retired-colourman",
+        "caseType": "short",
+        "title": "Der Farbenhändler im Ruhestand",
+        "originalTitle": "The Adventure of the Retired Colourman",
+        "year": 1927,
+        "collection": "Case-Book",
+        "status": "locked"
+      }
+    ]
+  },
+  {
+    "id": "a-study-in-scarlet",
+    "caseType": "novel",
+    "title": "Eine Studie in Scharlachrot",
+    "originalTitle": "A Study in Scarlet",
+    "year": 1887,
+    "status": "active",
+    "chapters": [],
+    "sourceChapters": [
+      {
+        "id": "chapter-1",
+        "nr": 1,
+        "title": "Mr. Sherlock Holmes"
+      },
+      {
+        "id": "chapter-2",
+        "nr": 2,
+        "title": "The Science of Deduction"
+      },
+      {
+        "id": "chapter-3",
+        "nr": 3,
+        "title": "The Lauriston Gardens Mystery"
+      },
+      {
+        "id": "chapter-4",
+        "nr": 4,
+        "title": "What John Rance Had to Tell"
+      },
+      {
+        "id": "chapter-5",
+        "nr": 5,
+        "title": "Our Advertisement Brings a Visitor"
+      },
+      {
+        "id": "chapter-6",
+        "nr": 6,
+        "title": "Tobias Gregson Shows What He Can Do"
+      },
+      {
+        "id": "chapter-7",
+        "nr": 7,
+        "title": "Light in the Darkness"
+      },
+      {
+        "id": "chapter-8",
+        "nr": 8,
+        "title": "On the Great Alkali Plain"
+      },
+      {
+        "id": "chapter-9",
+        "nr": 9,
+        "title": "The Flower of Utah"
+      },
+      {
+        "id": "chapter-10",
+        "nr": 10,
+        "title": "John Ferrier Talks with the Prophet"
+      },
+      {
+        "id": "chapter-11",
+        "nr": 11,
+        "title": "A Flight for Life"
+      },
+      {
+        "id": "chapter-12",
+        "nr": 12,
+        "title": "The Avenging Angels"
+      },
+      {
+        "id": "chapter-13",
+        "nr": 13,
+        "title": "A Continuation of the Reminiscences of John Watson, M.D."
+      },
+      {
+        "id": "chapter-14",
+        "nr": 14,
+        "title": "The Conclusion"
+      }
+    ]
+  },
+  {
+    "id": "the-sign-of-the-four",
+    "caseType": "novel",
+    "title": "Das Zeichen der Vier",
+    "originalTitle": "The Sign of the Four",
+    "year": 1890,
+    "status": "locked",
+    "chapters": [],
+    "sourceChapters": [
+      {
+        "id": "chapter-1",
+        "nr": 1,
+        "title": "The Science of Deduction"
+      },
+      {
+        "id": "chapter-2",
+        "nr": 2,
+        "title": "The Statement of the Case"
+      },
+      {
+        "id": "chapter-3",
+        "nr": 3,
+        "title": "In Quest of a Solution"
+      },
+      {
+        "id": "chapter-4",
+        "nr": 4,
+        "title": "The Story of the Bald-Headed Man"
+      },
+      {
+        "id": "chapter-5",
+        "nr": 5,
+        "title": "The Tragedy of Pondicherry Lodge"
+      },
+      {
+        "id": "chapter-6",
+        "nr": 6,
+        "title": "Sherlock Holmes Gives a Demonstration"
+      },
+      {
+        "id": "chapter-7",
+        "nr": 7,
+        "title": "The Episode of the Barrel"
+      },
+      {
+        "id": "chapter-8",
+        "nr": 8,
+        "title": "The Baker Street Irregulars"
+      },
+      {
+        "id": "chapter-9",
+        "nr": 9,
+        "title": "A Break in the Chain"
+      },
+      {
+        "id": "chapter-10",
+        "nr": 10,
+        "title": "The End of the Islander"
+      },
+      {
+        "id": "chapter-11",
+        "nr": 11,
+        "title": "The Great Agra Treasure"
+      },
+      {
+        "id": "chapter-12",
+        "nr": 12,
+        "title": "The Strange Story of Jonathan Small"
+      }
+    ]
+  },
+  {
+    "id": "the-hound-of-the-baskervilles",
+    "caseType": "novel",
+    "title": "Der Hund der Baskervilles",
+    "originalTitle": "The Hound of the Baskervilles",
+    "year": 1902,
+    "status": "locked",
+    "chapters": [],
+    "sourceChapters": [
+      {
+        "id": "chapter-1",
+        "nr": 1,
+        "title": "Mr. Sherlock Holmes"
+      },
+      {
+        "id": "chapter-2",
+        "nr": 2,
+        "title": "The Curse of the Baskervilles"
+      },
+      {
+        "id": "chapter-3",
+        "nr": 3,
+        "title": "The Problem"
+      },
+      {
+        "id": "chapter-4",
+        "nr": 4,
+        "title": "Sir Henry Baskerville"
+      },
+      {
+        "id": "chapter-5",
+        "nr": 5,
+        "title": "Three Broken Threads"
+      },
+      {
+        "id": "chapter-6",
+        "nr": 6,
+        "title": "Baskerville Hall"
+      },
+      {
+        "id": "chapter-7",
+        "nr": 7,
+        "title": "The Stapletons of Merripit House"
+      },
+      {
+        "id": "chapter-8",
+        "nr": 8,
+        "title": "First Report of Dr. Watson"
+      },
+      {
+        "id": "chapter-9",
+        "nr": 9,
+        "title": "Second Report of Dr. Watson"
+      },
+      {
+        "id": "chapter-10",
+        "nr": 10,
+        "title": "Extract from the Diary of Dr. Watson"
+      },
+      {
+        "id": "chapter-11",
+        "nr": 11,
+        "title": "The Man on the Tor"
+      },
+      {
+        "id": "chapter-12",
+        "nr": 12,
+        "title": "Death on the Moor"
+      },
+      {
+        "id": "chapter-13",
+        "nr": 13,
+        "title": "Fixing the Nets"
+      },
+      {
+        "id": "chapter-14",
+        "nr": 14,
+        "title": "The Hound of the Baskervilles"
+      },
+      {
+        "id": "chapter-15",
+        "nr": 15,
+        "title": "A Retrospection"
+      }
+    ]
+  },
+  {
+    "id": "the-valley-of-fear",
+    "caseType": "novel",
+    "title": "Das Tal der Angst",
+    "originalTitle": "The Valley of Fear",
+    "year": 1915,
+    "status": "locked",
+    "chapters": [],
+    "sourceChapters": [
+      {
+        "id": "chapter-1",
+        "nr": 1,
+        "title": "The Warning"
+      },
+      {
+        "id": "chapter-2",
+        "nr": 2,
+        "title": "Sherlock Holmes Discourses"
+      },
+      {
+        "id": "chapter-3",
+        "nr": 3,
+        "title": "The Tragedy of Birlstone"
+      },
+      {
+        "id": "chapter-4",
+        "nr": 4,
+        "title": "Darkness"
+      },
+      {
+        "id": "chapter-5",
+        "nr": 5,
+        "title": "The People of the Drama"
+      },
+      {
+        "id": "chapter-6",
+        "nr": 6,
+        "title": "A Dawning Light"
+      },
+      {
+        "id": "chapter-7",
+        "nr": 7,
+        "title": "The Solution"
+      },
+      {
+        "id": "chapter-8",
+        "nr": 8,
+        "title": "The Man"
+      },
+      {
+        "id": "chapter-9",
+        "nr": 9,
+        "title": "The Bodymaster"
+      },
+      {
+        "id": "chapter-10",
+        "nr": 10,
+        "title": "Lodge 341, Vermissa"
+      },
+      {
+        "id": "chapter-11",
+        "nr": 11,
+        "title": "The Valley of Fear"
+      },
+      {
+        "id": "chapter-12",
+        "nr": 12,
+        "title": "The Darkest Hour"
+      },
+      {
+        "id": "chapter-13",
+        "nr": 13,
+        "title": "Danger"
+      },
+      {
+        "id": "chapter-14",
+        "nr": 14,
+        "title": "The Trapping of Birdy Edwards"
+      }
+    ]
+  }
+]
