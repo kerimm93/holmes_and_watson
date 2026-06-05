@@ -23,6 +23,9 @@
       --verdigris:   #2a4a3a;
       --verdigris-light: #3d6b52;
       --gold-worn:   #8b6914;
+      --gold-bright: #b08a2e;
+      --paper-warm:  #ece2c8;
+      --hair:        rgba(90,69,48,0.28);
       --shadow:      rgba(28,21,16,0.18);
 
       --font-display: 'Playfair Display', 'IM Fell English', Georgia, serif;
@@ -210,10 +213,72 @@
       color: var(--rule);
     }
 
-    /* ── PROGRESS BAR ─────────────────────────────────────────────── */
+    /* Gaslight-Noir signet: decorative SH wax seal */
+    .sh-seal {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      color: #f1d8bd;
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -1px;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.45);
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255,225,188,0.22), transparent 22%),
+        radial-gradient(circle at 68% 72%, rgba(45,0,0,0.18), transparent 28%),
+        linear-gradient(145deg, #8b2020 0%, var(--blood) 58%, #4a0909 100%);
+      border: 2px solid rgba(65,8,8,0.55);
+      box-shadow: inset 0 0 0 3px rgba(255,226,180,0.12), inset 0 -8px 14px rgba(45,0,0,0.2), 2px 4px 8px rgba(0,0,0,0.28);
+    }
+    .sh-seal::before {
+      content: '';
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      border: 1px dashed rgba(245,215,180,0.45);
+    }
+    .sh-seal::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      bottom: 5px;
+      width: 13px;
+      height: 12px;
+      border-radius: 50% 45% 50% 55%;
+      background: #5f0d0d;
+      box-shadow: -38px 3px 0 -4px #7a1717;
+      opacity: 0.9;
+    }
+    .sh-seal span { position: relative; z-index: 1; }
+    .masthead-seal {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%) rotate(5deg);
+      width: 48px;
+      height: 48px;
+      font-size: 17px;
+    }
+    .masthead-title-block { position: relative; }
+    .splash-seal {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 14px;
+      font-size: 25px;
+      transform: rotate(-7deg);
+    }
+
+    /* ── PROGRESS BAR / PHASE STEPPER ─────────────────────────────── */
     #progress-bar-wrap {
       background: var(--ink);
-      padding: 5px 14px 4px;
+      padding: 8px 14px 20px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -255,12 +320,79 @@
       font-size: 8px;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: rgba(242,234,216,0.5);
+      color: rgba(242,234,216,0.62);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 140px;
     }
+    #progress-track { display: none; }
+    #phase-stepper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      padding: 0 2px;
+    }
+    .phase-step {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+    }
+    .phase-step:last-child { flex: 0 0 auto; }
+    .phase-node-wrap { position: relative; flex-shrink: 0; }
+    .phase-node {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      display: block;
+      position: relative;
+      border: 1.5px solid rgba(216,205,176,0.48);
+      background: var(--ink-mid);
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.16);
+    }
+    .phase-line {
+      flex: 1;
+      min-width: 8px;
+      height: 2px;
+      margin: 0 5px;
+      background: rgba(216,205,176,0.2);
+    }
+    .phase-step.done .phase-node,
+    .phase-step.done .phase-line {
+      background: var(--gold-bright);
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 7px rgba(176,138,46,0.46);
+    }
+    .phase-step.current .phase-node {
+      background: var(--paper-aged);
+      border-color: var(--paper-aged);
+      box-shadow: 0 0 0 4px rgba(216,205,176,0.14), 0 0 10px rgba(216,205,176,0.38);
+    }
+    .phase-step.current .phase-node::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid rgba(216,205,176,0.52);
+      border-radius: 50%;
+      animation: phase-ring 2.2s ease-out infinite;
+    }
+    .phase-step-label {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-type);
+      font-size: 7px;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      color: rgba(216,205,176,0.5);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .phase-step.current .phase-step-label { color: var(--paper-aged); }
+    @keyframes phase-ring { 0%{transform:scale(0.72);opacity:0.8} 100%{transform:scale(1.45);opacity:0} }
 
     /* ── TAB ROW ─────────────────────────────────────────────────── */
     #tab-row {
@@ -334,6 +466,42 @@
       position: relative;
       z-index: 1;
       margin-bottom: 14px;
+      padding: 10px 12px;
+      background: rgba(242,234,216,0.82);
+      border: 1px solid rgba(90,69,48,0.22);
+      box-shadow: 2px 2px 0 rgba(28,21,16,0.08);
+    }
+    .msg-block::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--rule-light);
+    }
+    .msg-ai::before { background: var(--blood); }
+    .msg-player::before { background: var(--verdigris); }
+    .msg-system::before { background: var(--ink-ghost); }
+    .msg-evidence::before { background: var(--gold-worn); }
+    .msg-ai {
+      margin-right: 8px;
+      background: linear-gradient(90deg, rgba(107,16,16,0.055), rgba(242,234,216,0.9));
+    }
+    .msg-player {
+      margin-left: 18px;
+      background: linear-gradient(90deg, rgba(42,74,58,0.08), rgba(242,234,216,0.86));
+    }
+    .msg-system {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 92%;
+      background: rgba(228,217,192,0.72);
+      border-style: dashed;
+    }
+    .msg-evidence {
+      background: linear-gradient(90deg, rgba(139,105,20,0.08), rgba(242,234,216,0.9));
+      border-color: rgba(139,105,20,0.34);
     }
 
     /* ── CASE SELECTOR OVERLAY ───────────────────────────────────── */
@@ -614,28 +782,67 @@
     }
 
     .evidence-card {
-      border: 1px solid var(--rule-light);
-      margin-bottom: 10px;
+      border: 1px solid rgba(90,69,48,0.55);
+      margin-bottom: 12px;
+      background:
+        linear-gradient(90deg, rgba(90,69,48,0.09) 0 24px, transparent 24px),
+        var(--paper-warm);
+      box-shadow: 3px 4px 0 rgba(28,21,16,0.13);
+      position: relative;
+      overflow: hidden;
+    }
+    .evidence-card::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 11px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
       background: var(--paper);
-      box-shadow: 2px 2px 0 var(--shadow);
+      border: 1px solid rgba(90,69,48,0.45);
+      box-shadow: 0 20px 0 var(--paper), 0 20px 0 1px rgba(90,69,48,0.22);
     }
     .evidence-card-head {
-      background: var(--ink);
-      color: var(--paper-aged);
+      color: var(--ink);
       font-family: var(--font-type);
       font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 1px;
-      padding: 4px 10px;
+      padding: 8px 10px 7px 32px;
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      border-bottom: 1px double rgba(90,69,48,0.36);
+    }
+    .evidence-card-title { line-height: 1.45; }
+    .evidence-card-ref {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--blood);
+      letter-spacing: 1.2px;
     }
     .evidence-card-body {
-      padding: 8px 10px;
+      padding: 10px 12px 12px 32px;
       font-family: var(--font-text);
       font-size: 13px;
-      line-height: 1.55;
+      line-height: 1.6;
       font-style: italic;
+      color: var(--ink-mid);
+    }
+    .evidence-secured {
+      display: inline-block;
+      margin-top: 9px;
+      transform: rotate(-2deg);
+      border: 1px solid rgba(107,16,16,0.55);
+      color: var(--blood);
+      padding: 2px 7px;
+      font-family: var(--font-type);
+      font-size: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(107,16,16,0.045);
     }
     .evidence-tag {
       display: inline-block;
@@ -973,16 +1180,34 @@
     }
     #verdict-overlay.open { display: flex; }
     .verdict-box {
-      background: var(--paper);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(107,16,16,0.08), transparent 42%),
+        var(--paper);
       border: 3px double var(--blood);
       width: 100%;
       padding: 0;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+      box-shadow: 10px 12px 0 rgba(0,0,0,0.48), 0 0 34px rgba(107,16,16,0.22);
+      position: relative;
+      overflow: hidden;
+    }
+    .verdict-box::after {
+      content: 'SCOTLAND YARD DOSSIER';
+      position: absolute;
+      right: -34px;
+      bottom: 28px;
+      transform: rotate(-32deg);
+      font-family: var(--font-type);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(107,16,16,0.18);
+      border: 1px solid rgba(107,16,16,0.18);
+      padding: 5px 28px;
+      pointer-events: none;
     }
     .verdict-head {
-      background: var(--blood);
+      background: linear-gradient(135deg, #3a0808, var(--blood) 55%, #8b2020);
       color: var(--paper-aged);
-      padding: 14px 16px;
+      padding: 13px 16px;
       font-family: var(--font-display);
       font-size: 18px;
       font-style: italic;
@@ -990,8 +1215,35 @@
       text-align: center;
       text-transform: uppercase;
       letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
-    .verdict-body { padding: 16px; }
+    .verdict-head .sh-seal { width: 42px; height: 42px; font-size: 15px; transform: rotate(-8deg); }
+    .verdict-body { padding: 18px 16px 16px; position: relative; z-index: 1; }
+    .verdict-result-card {
+      border: 3px double var(--blood);
+      background: var(--paper-warm);
+      box-shadow: 4px 4px 0 rgba(28,21,16,0.16);
+      padding: 12px;
+      position: relative;
+    }
+    .verdict-result-card::before {
+      content: 'FALLAKTE GESCHLOSSEN';
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      margin: -2px auto 10px;
+      transform: rotate(-2deg);
+      border: 2px solid rgba(107,16,16,0.58);
+      color: var(--blood);
+      padding: 4px 10px;
+      font-family: var(--font-type);
+      font-size: 10px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
     .verdict-select {
       width: 100%;
       background: var(--paper-dark);
@@ -1209,6 +1461,20 @@
       line-height: 1.6;
       margin-top: 8px;
     }
+
+    @media (max-width: 520px) {
+      .masthead-seal { display: none; }
+      #progress-bar-wrap { gap: 7px; padding: 8px 10px 7px; }
+      #progress-phase { display: none; }
+      .phase-step-label { display: none; }
+      .phase-line { margin: 0 3px; min-width: 5px; }
+      .msg-block { padding: 9px 10px; }
+      .msg-player { margin-left: 8px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.001ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -1216,6 +1482,7 @@
 
   <!-- SPLASH SCREEN -->
   <div id="splash">
+    <div class="sh-seal splash-seal" aria-hidden="true"><span>SH</span></div>
     <div class="splash-ornament">Baker Street &middot; London &middot; 1881</div>
     <div class="splash-title">Sherlock Holmes</div>
     <div class="splash-subtitle">Interaktive Detektivspiele</div>
@@ -1241,6 +1508,7 @@
       </div>
     </div>
     <div class="masthead-title-block">
+      <div class="sh-seal masthead-seal" aria-hidden="true"><span>SH</span></div>
       <span class="masthead-kicker" id="masthead-kicker">Ein Watson-Bericht &middot; Baker Street</span>
       <div class="masthead-title" id="masthead-title">Eine Studie in Scharlachrot</div>
     </div>
@@ -1255,6 +1523,7 @@
     <div id="progress-track">
       <div id="progress-fill"></div>
     </div>
+    <div id="phase-stepper" aria-hidden="true"></div>
     <span id="progress-pct">0%</span>
     <span id="progress-phase">Tatortbesichtigung</span>
   </div>
@@ -1443,7 +1712,7 @@
   <!-- VERDICT OVERLAY -->
   <div id="verdict-overlay">
     <div class="verdict-box">
-      <div class="verdict-head">Anklage erheben</div>
+      <div class="verdict-head"><span class="sh-seal" aria-hidden="true"><span>SH</span></span><span>Anklage erheben</span></div>
       <div class="verdict-body">
         <p style="font-family:var(--font-text);font-size:13px;font-style:italic;margin-bottom:10px;color:var(--ink-mid)">Wessen Sie den Tater fur schuldig, mein Herr? Denken Sie sorgfaltig nach.</p>
         <label class="settings-label">Ihr Verdachtiger</label>
@@ -1943,7 +2212,7 @@ function calculateScore() {
 // Zeigt Score-Panel nach Anklage
 function showScorePanel(verdict) {
   var sc = calculateScore();
-  var html = '<div style="text-align:center;padding:8px 0 12px">' +
+  var html = '<div class="verdict-result-card"><div style="text-align:center;padding:8px 0 12px">' +
     '<div style="font-family:var(--font-display);font-size:18px;font-weight:900;font-style:italic">' +
     sc.title + '</div>' +
     '<div style="font-family:var(--font-type);font-size:9px;color:var(--ink-ghost);margin-top:4px;letter-spacing:1px;text-transform:uppercase">' +
@@ -1955,7 +2224,7 @@ function showScorePanel(verdict) {
     '</div>' +
     '<div style="margin-top:12px;font-family:var(--font-text);font-size:12px;font-style:italic;color:var(--ink-mid);border-top:1px solid var(--rule-light);padding-top:8px">' +
     'Beweise gefunden: ' + G.evidence.length + '/10 &middot; Schritte: ' + G.leadsUsed +
-    ' &middot; Hints: ' + G.hintsUsed + '</div>';
+    ' &middot; Hints: ' + G.hintsUsed + '</div></div>';
   addMsg('evidence', 'Watson\'s Urteil', html);
 }
 
@@ -2236,17 +2505,17 @@ function renderEvidence() {
   if(G.evidence.length === 0) return;
 
   list.innerHTML = '';
-  G.evidence.forEach(function(id) {
+  G.evidence.forEach(function(id, idx) {
     var ev = CASE.evidence.find(function(e){return e.id===id;});
     if(!ev) return;
     var card = document.createElement('div');
     card.className = 'evidence-card';
     card.innerHTML =
       '<div class="evidence-card-head">' +
-        '<span>' + escHtml(ev.title) + '</span>' +
+        '<span class="evidence-card-title"><span class="evidence-card-ref">Asservat ' + String(idx + 1).padStart(2, '0') + '</span>' + escHtml(ev.title) + '</span>' +
         '<span class="evidence-tag tag-' + ev.tag + '">' + tagLabel(ev.tag) + '</span>' +
       '</div>' +
-      '<div class="evidence-card-body">' + escHtml(ev.desc) + '</div>';
+      '<div class="evidence-card-body">' + escHtml(ev.desc) + '<br><span class="evidence-secured">Gesichert</span></div>';
     list.appendChild(card);
   });
 
@@ -2350,6 +2619,21 @@ function travelToLocation(loc) {
   handleSend();
 }
 
+
+function renderPhaseStepper(currentPhase) {
+  var stepper = document.getElementById('phase-stepper');
+  if(!stepper || !CASE.phases) return;
+  var currentIndex = CASE.phases.findIndex(function(p){ return p === currentPhase || p.label === currentPhase.label; });
+  if(currentIndex < 0) currentIndex = 0;
+  stepper.innerHTML = CASE.phases.map(function(p, idx) {
+    var state = idx < currentIndex ? 'done' : (idx === currentIndex ? 'current' : 'upcoming');
+    return '<div class="phase-step ' + state + '">' +
+      '<span class="phase-node-wrap"><span class="phase-node"></span><span class="phase-step-label">' + escHtml(p.label) + '</span></span>' +
+      (idx < CASE.phases.length - 1 ? '<span class="phase-line"></span>' : '') +
+      '</div>';
+  }).join('');
+}
+
 function updatePhaseBanner() {
   var phase = getCurrentPhase();
 
@@ -2376,6 +2660,7 @@ function updatePhaseBanner() {
   if(fill) fill.style.width = pct + '%';
   if(pctEl) pctEl.textContent = pct + '%';
   if(phaseEl) phaseEl.textContent = phase.label;
+  renderPhaseStepper(phase);
 
   // Farbe wechselt je nach Fortschritt
   if(fill) {
