@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BakerstreetRPG — Visual Design-Handoff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2ead8; --paper-dark:#e4d9c0; --paper-aged:#d8cdb0; --paper-warm:#ece2c8;
+  --ink:#1c1510; --ink-mid:#3d3020; --ink-faded:#6b5840; --ink-ghost:#9a8060;
+  --rule:#5a4530; --rule-light:#a08060; --hair:rgba(90,69,48,.26);
+  --blood:#6b1010; --verdigris:#2a4a3a; --gold:#8b6914; --gold-bright:#b08a2e;
+  --fd:'Playfair Display',Georgia,serif; --ff:'IM Fell English',Georgia,serif;
+  --ft:'Libre Baskerville',Georgia,serif; --fm:'Special Elite','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a120a;font-family:var(--ft);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+.sheet{max-width:880px;margin:0 auto;background:var(--paper);position:relative;
+  box-shadow:0 0 80px rgba(0,0,0,.6);min-height:100vh}
+.sheet::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")}
+
+/* masthead */
+.doc-head{background:var(--paper-dark);border-bottom:3px double var(--rule);padding:26px 56px 20px;position:relative}
+.doc-kicker{font-family:var(--fm);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--ink-faded);margin-bottom:10px}
+.doc-title{font-family:var(--fd);font-size:38px;font-weight:900;font-style:italic;line-height:1.02;letter-spacing:-.5px}
+.doc-sub{font-family:var(--ff);font-style:italic;font-size:16px;color:var(--ink-mid);margin-top:8px}
+.doc-meta{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-faded);margin-top:16px;display:flex;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule-light);padding-top:12px}
+.doc-seal{position:absolute;top:26px;right:48px}
+
+/* body */
+.doc-body{padding:8px 56px 64px}
+@media(max-width:680px){.doc-head{padding:22px 26px 18px}.doc-body{padding:8px 26px 48px}.doc-title{font-size:28px}.doc-seal{display:none}}
+
+.sec{margin-top:46px;scroll-margin-top:20px}
+.sec-num{font-family:var(--fm);font-size:11px;letter-spacing:2px;color:var(--gold);display:block;margin-bottom:4px}
+.sec-h{font-family:var(--fd);font-size:25px;font-weight:900;font-style:italic;color:var(--ink);border-bottom:2px solid var(--rule);padding-bottom:10px;margin-bottom:18px}
+h3{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--ink);margin:24px 0 8px}
+h4{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-faded);margin:18px 0 7px}
+p{margin-bottom:11px;font-size:15px}
+strong{color:var(--ink);font-weight:700}
+em{color:var(--ink-mid)}
+ul{margin:0 0 12px 0;padding-left:0;list-style:none}
+li{font-size:14.5px;margin-bottom:7px;padding-left:22px;position:relative;line-height:1.55}
+li::before{content:'';position:absolute;left:4px;top:9px;width:6px;height:6px;background:var(--rule);transform:rotate(45deg)}
+li.plus::before{background:var(--verdigris)}
+li.minus::before{background:var(--blood)}
+code,.sel{font-family:var(--fm);font-size:12.5px;background:var(--paper-warm);border:1px solid var(--hair);padding:1px 6px;color:var(--blood);white-space:nowrap}
+
+.lede{font-family:var(--ff);font-size:17px;font-style:italic;line-height:1.65;color:var(--ink-mid);border-left:3px solid var(--gold);padding:4px 0 4px 18px;margin-bottom:20px}
+
+/* proposal cards */
+.prop{border:1px solid var(--rule);background:var(--paper-warm);margin-bottom:16px;box-shadow:3px 4px 0 rgba(28,21,16,.12)}
+.prop-head{background:var(--ink);color:var(--paper-aged);padding:11px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prop-id{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--gold-bright)}
+.prop-title{font-family:var(--fd);font-size:16px;font-weight:700;font-style:italic;flex:1;min-width:200px}
+.prop-body{padding:14px 18px 16px}
+.prop-row{display:flex;gap:10px;margin-bottom:8px;font-size:14px}
+.prop-row .k{font-family:var(--fm);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faded);width:96px;flex-shrink:0;padding-top:3px}
+.prop-row .v{flex:1;line-height:1.5}
+.badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+.badge{font-family:var(--fm);font-size:8.5px;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border:1px solid}
+.b-klein{color:var(--verdigris);border-color:var(--verdigris);background:rgba(42,74,58,.07)}
+.b-mittel{color:var(--gold);border-color:var(--gold);background:rgba(139,105,20,.07)}
+.b-gross{color:var(--blood);border-color:var(--blood);background:rgba(107,16,16,.07)}
+.b-niedrig{color:var(--verdigris);border-color:var(--verdigris)}
+.b-mittelr{color:var(--gold);border-color:var(--gold)}
+.b-hoch{color:var(--blood);border-color:var(--blood)}
+
+/* MVP callout */
+.mvp{border:3px double var(--blood);background:var(--paper);margin-bottom:16px}
+.mvp .prop-head{background:var(--blood)}
+.mvp .prop-id{color:var(--paper-aged)}
+
+.note{font-family:var(--ff);font-style:italic;font-size:14px;color:var(--ink-mid);background:var(--paper-dark);border-left:3px solid var(--rule);padding:11px 16px;margin:14px 0}
+
+.divider{display:flex;align-items:center;justify-content:center;gap:12px;color:var(--rule-light);margin:8px 0 0}
+.divider::before,.divider::after{content:'';height:1px;width:120px;background:var(--rule-light)}
+.divider span{font-family:var(--ff);font-style:italic;font-size:13px;color:var(--rule)}
+
+/* json */
+pre{background:var(--ink);color:var(--paper-aged);font-family:var(--fm);font-size:12px;line-height:1.55;
+  padding:20px 22px;overflow-x:auto;border:1px solid #000;margin-top:8px;white-space:pre}
+pre .pk{color:var(--gold-bright)}
+.scroll-x{overflow-x:auto}
+
+/* TOC */
+.toc{background:var(--paper-warm);border:1px solid var(--rule);padding:16px 20px;margin-top:26px}
+.toc-h{font-family:var(--fm);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faded);margin-bottom:10px}
+.toc a{display:flex;gap:10px;font-family:var(--ft);font-size:14px;color:var(--ink);text-decoration:none;padding:4px 0;border-bottom:1px solid var(--hair)}
+.toc a:last-child{border-bottom:none}
+.toc a:hover{color:var(--blood)}
+.toc a .n{font-family:var(--fm);font-size:11px;color:var(--gold);width:22px}
+
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{font-family:var(--fm);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faded);border-bottom:1px solid var(--rule)}
+td .sel{font-size:11.5px}
+.footer{text-align:center;font-family:var(--ff);font-style:italic;color:var(--ink-ghost);font-size:14px;padding:34px 0 10px;border-top:1px solid var(--rule-light);margin-top:48px}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- WAX SEAL -->
+  <svg class="doc-seal" width="64" height="64" viewBox="0 0 100 100" aria-hidden="true">
+    <defs><radialGradient id="wax" cx="38%" cy="34%" r="72%"><stop offset="0%" stop-color="#9a2424"/><stop offset="55%" stop-color="#6b1010"/><stop offset="100%" stop-color="#430a0a"/></radialGradient></defs>
+    <path fill="url(#wax)" d="M50 4c4 6 11 5 16 9s5 11 10 15 12 4 14 10-2 12-1 18 5 11 2 17-11 4-15 9-5 12-11 14-11-3-17-3-12 5-18 3-6-9-11-13-13-4-15-10 4-12 3-18-5-11-2-17 11-5 15-9 4-12 10-15 11 2 16-9z"/>
+    <circle cx="50" cy="50" r="30" fill="none" stroke="#430a0a" stroke-width="1.5" opacity=".6"/>
+    <text x="50" y="62" text-anchor="middle" font-family="Playfair Display,serif" font-size="34" font-style="italic" font-weight="900" fill="#f2ead8" opacity=".92">SH</text>
+  </svg>
+
+  <header class="doc-head">
+    <div class="doc-kicker">Visual Design-Handoff · Gaslight Noir</div>
+    <div class="doc-title">BakerstreetRPG</div>
+    <div class="doc-sub">Gezieltes visuelles Redesign &mdash; minimal-invasiv, Codex-tauglich</div>
+    <div class="doc-meta">
+      <span>Claude Design</span><span>·</span><span>Single-File · Vanilla JS</span><span>·</span><span>Stand: Juni 1881 — pardon, 2026</span>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <div class="lede">
+      Dieses Dokument ist <strong>kein</strong> Rewrite. Es analysiert den bestehenden Stand, benennt die größten visuellen Hebel und übersetzt sie in einen klar abgegrenzten, minimal-invasiven Codex-Sprint. Bestehende IDs, Klassen und Hook-Strukturen werden respektiert; alle Logik-, State-, Registry-, Case-Loading- und Sync-Bereiche bleiben unberührt. Ein begleitender klickbarer Prototyp (<span class="sel">Prototyp.html</span>) zeigt die Zielwirkung.
+    </div>
+
+    <div class="toc">
+      <div class="toc-h">Inhalt der Akte</div>
+      <a href="#s1"><span class="n">1</span> Kurzfazit</a>
+      <a href="#s2"><span class="n">2</span> Design-Strategie &amp; token-schonende Nutzung</a>
+      <a href="#s3"><span class="n">3</span> Konkrete Design-Vorschläge</a>
+      <a href="#s4"><span class="n">4</span> MVP-Auswahl für den Codex-Sprint</a>
+      <a href="#s5"><span class="n">5</span> Geparkte Ideen für später</a>
+      <a href="#s6"><span class="n">6</span> Codex-Handoff</a>
+      <a href="#s7"><span class="n">7</span> JSON-Handoff</a>
+    </div>
+
+    <!-- ══ 1 KURZFAZIT ══ -->
+    <section class="sec" id="s1">
+      <span class="sec-num">Abschnitt I</span>
+      <h2 class="sec-h">1 · Kurzfazit</h2>
+
+      <h4>Wie wirkt das aktuelle UI?</h4>
+      <p>Das UI hat bereits eine erstaunlich kohärente <strong>viktorianische Zeitungs-Identität</strong>: gealtertes Papier, doppelte Trennlinien, eine saubere Schrift-Hierarchie (Playfair Display / Libre Baskerville / Special Elite), Grain-Textur und ein newspaper-Masthead. Es liest sich seriös und atmosphärisch — näher an einer „Fallakte als Webseite" als an einem generischen Chat-Tool. Das ist ein starkes Fundament.</p>
+
+      <h4>Was funktioniert schon gut?</h4>
+      <ul>
+        <li class="plus"><strong>Farbwelt &amp; Typo</strong>: Die Paper-/Ink-Palette und das Font-Trio sind stimmig und müssen <em>nicht</em> angefasst werden.</li>
+        <li class="plus"><strong>Informationsarchitektur</strong>: Bericht / Beweise / Akte / Orte ist klar; Desktop-Sidebar (<span class="sel">#sidebar-col</span>) vs. Mobile-Tabs (<span class="sel">#tab-row</span>) ist sinnvoll getrennt.</li>
+        <li class="plus"><strong>Masthead</strong> (<span class="sel">#masthead</span>) mit Kicker, Titel und Ornamentzeile trägt die Markenidentität bereits gut.</li>
+        <li class="plus"><strong>Beweis-/Aussage-/Dokument-Tags</strong> (<span class="sel">.tag-physical/.tag-testimony/.tag-document</span>) bringen Farbsemantik in die Beweise.</li>
+      </ul>
+
+      <h4>Was ist visuell schwach oder uneinheitlich?</h4>
+      <ul>
+        <li class="minus"><strong>Tote Fläche auf Desktop</strong>: Der schwach eingeblendete Karten-Hintergrund (<span class="sel">#chat-area</span>) lässt die Mitte des Hauptscreens vor der ersten Interaktion leer und beziehungslos wirken.</li>
+        <li class="minus"><strong>Fortschrittsanzeige zu generisch</strong>: <span class="sel">#progress-bar-wrap</span> ist ein dünner Balken; die 5 benannten Ermittlungsphasen aus den Falldaten werden visuell verschenkt.</li>
+        <li class="minus"><strong>Leere Verdächtigen-Mugshots</strong> (<span class="sel">.suspect-mugshot</span>): Emoji-/Platzhalter wirken billiger als der Rest.</li>
+        <li class="minus"><strong>Verdict als nüchternes Formular</strong> (<span class="sel">#verdict-overlay</span>): der dramatischste Moment des Spiels fühlt sich am wenigsten spielartig an.</li>
+        <li class="minus"><strong>Flache Buttons/Cards</strong>: Quick-Actions, Evidence-Cards und Case-Einträge sind funktional, aber ohne haptische „Dossier"-Qualität.</li>
+        <li class="minus"><strong>Fehlende Markenkonstante</strong>: kein wiederkehrendes Signet (Siegel/Monogramm), das Screens verklammert.</li>
+      </ul>
+
+      <h4>Wo liegt der größte Hebel?</h4>
+      <p>Nicht in einem Umbau, sondern in <strong>fünf gezielten „Reskins" bestehender Container</strong>: (1) Phasen-Stepper statt Balken, (2) Beweise als Asservat-Karten, (3) Splash/Case-Selector als Aktenregal, (4) ein Wachssiegel-Signet als Marke, (5) ein dramatischer Verdict-Moment. Alle fünf sind reine HTML/CSS-Restyles auf vorhandenen Hooks — große Wirkung, kleines Risiko.</p>
+    </section>
+
+    <!-- ══ 2 STRATEGIE ══ -->
+    <section class="sec" id="s2">
+      <span class="sec-num">Abschnitt II</span>
+      <h2 class="sec-h">2 · Design-Strategie</h2>
+
+      <h3>Empfohlene visuelle Gesamtrichtung</h3>
+      <p><strong>„Fallakte unter Gaslicht".</strong> Wir verstärken das vorhandene Zeitungs-/Dossier-Motiv zu einer durchgehenden Metapher: das gesamte UI ist eine <em>physische Ermittlungsmappe</em> — Asservate auf Karteikarten, Verdächtige als gravierte Porträts, Orte auf einer Atlas-Seite, der Fallabschluss als gebrochenes Wachssiegel. Düster-elegant statt kitschig: warmes Papier, tiefe Tinte, sparsame Akzente in <span class="sel">--blood</span> (Gefahr/Beweis), <span class="sel">--verdigris</span> (bestätigt/Spieler) und <span class="sel">--gold</span> (Dokumente/Messing).</p>
+      <p>Leitprinzip: <strong>Atmosphäre darf nie die Lesbarkeit kosten.</strong> Mindestschriftgrößen, klare Kontraste und ruhige Flächen bleiben Pflicht.</p>
+
+      <h3>Wie Claude Design künftig token-schonend genutzt werden sollte</h3>
+      <ul>
+        <li>Pro Auftrag <strong>einen klar umrissenen Screen oder ein Pattern</strong> reskinnen lassen — nicht „die App".</li>
+        <li>Immer <strong>als CSS-Diff gegen bestehende Selektoren</strong> denken: „Style <span class="sel">.evidence-card</span> um", nicht „erzeuge ein neues Beweissystem".</li>
+        <li>Visuelle Bausteine (Siegel, Stepper, Stempel, Ornamente) <strong>einmalig als wiederverwendbare Snippets</strong> etablieren und danach nur referenzieren.</li>
+        <li>Den Prototyp als <strong>verbindliche Referenz</strong> verlinken, statt Wirkung in Prosa neu zu beschreiben.</li>
+      </ul>
+
+      <h3>Welche Inputs wirklich nötig sind</h3>
+      <ul>
+        <li class="plus">Der relevante <strong>HTML-/CSS-Ausschnitt</strong> des betroffenen Bereichs (nicht die ganze Datei).</li>
+        <li class="plus">Die betroffenen <strong>Selektoren/IDs</strong> und ein Satz zur gewünschten Wirkung.</li>
+        <li class="plus">Ein <strong>Screenshot</strong> des Ist-Zustands, wenn der Code allein die Optik nicht verrät.</li>
+      </ul>
+
+      <h3>Welche Inputs unnötig oder zu teuer wären</h3>
+      <ul>
+        <li class="minus">Die <strong>vollständige <span class="sel">index.html</span></strong> (3.500+ Zeilen) für eine punktuelle Optik-Frage.</li>
+        <li class="minus"><strong>Spiel-, Case- und Sync-Logik</strong> (<span class="sel">cases/*.json</span>, <span class="sel">sw.js</span>, Gist-Sync) — für visuelle Arbeit irrelevant.</li>
+        <li class="minus">Offene Briefings ohne Zielbereich („mach es schöner") — führen zu teurem, ungerichtetem Output.</li>
+      </ul>
+    </section>
+
+    <!-- ══ 3 VORSCHLÄGE ══ -->
+    <section class="sec" id="s3">
+      <span class="sec-num">Abschnitt III</span>
+      <h2 class="sec-h">3 · Konkrete Design-Vorschläge</h2>
+      <p class="note">Aufwand: <strong>klein</strong> = reines CSS / kleine Markup-Ergänzung · <strong>mittel</strong> = neues Markup-Muster, vorhandene Render-Funktion anpassen · <strong>groß</strong> = neue Komponente/Interaktion. Risiko bezieht sich ausschließlich auf den visuellen Layer; keiner der Vorschläge ändert Spiellogik.</p>
+
+      <!-- P1 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-01</span><span class="prop-title">Phasen-Stepper statt Fortschrittsbalken</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Die 5 benannten Ermittlungsphasen sichtbar machen; sofort kommunizieren „wo stehe ich, was kommt".</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">#progress-bar-wrap</span>, <span class="sel">#progress-track</span>, <span class="sel">#progress-fill</span>, <span class="sel">#progress-phase</span> · JS <span class="sel">updatePhaseBanner()</span> (vermutlich betroffen)</span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Größter Game-Feel-Gewinn pro Codezeile: ein Stepper mit Knoten + Verbindungslinie ersetzt den anonymen Balken. Die Phasen-Labels existieren bereits in den Falldaten.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-klein">Aufwand: klein</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P2 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-02</span><span class="prop-title">Beweise als Asservat-Karten</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Beweise wie physische Beweisstücke wirken lassen — Karteikarte mit Lochung/Faden, Typ-Stempel, „Gesichert"-Stempel.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">.evidence-card</span>, <span class="sel">.evidence-card-head</span>, <span class="sel">.evidence-card-body</span>, <span class="sel">.evidence-tag</span> · Render in <span class="sel">renderEvidence()</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Starke, markenbildende Identität an einer zentralen, häufig besuchten Stelle. Tags &amp; Render-Funktion bestehen schon; es ist überwiegend CSS plus minimale Markup-Ergänzung.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-mittel">Aufwand: mittel</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P3 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-03</span><span class="prop-title">Splash &amp; Case-Selector als Aktenregal</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Fälle als Aktenmappen mit Jahres-Rücken und Status-Stempel (Aktiv / Verfügbar / Versiegelt) — der erste Eindruck wird zum „Aktenfach".</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">#splash</span>, <span class="sel">.splash-case-btn</span> · <span class="sel">#case-selector</span>, <span class="sel">.case-entry</span>, <span class="sel">.case-entry-year</span>, <span class="sel">.case-entry-status</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Der Einstieg setzt den Ton. Der vertikale Jahres-Rücken existiert bereits (<span class="sel">.case-entry-year</span>) — wir bauen ihn zur Mappe aus. Reines Restyle der gerenderten Liste.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-mittel">Aufwand: mittel</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P4 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-04</span><span class="prop-title">Wachssiegel-Signet als Markenkonstante</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Ein wiederkehrendes „SH"-Wachssiegel (Inline-SVG) verklammert Splash, Masthead und Verdict.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">#masthead .masthead-title-block</span>, <span class="sel">#splash</span>, <span class="sel">.verdict-head</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Ein einziges SVG-Snippet, mehrfach platziert, schafft sofort Markenwiedererkennung. Kein Asset-Hosting nötig (Inline-SVG, offline-fest).</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-klein">Aufwand: klein</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P5 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-05</span><span class="prop-title">Verdict als dramatischer Abschluss-Moment</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Anklage mit Verdächtigen-Porträtkarten statt Dropdown; Ergebnis als Siegel-Reveal („Fall gelöst" / „Fehlschluss") mit Stempel.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">#verdict-overlay</span>, <span class="sel">.verdict-box</span>, <span class="sel">.verdict-head</span>, <span class="sel">.verdict-select</span> &rarr; Porträt-Grid · JS <span class="sel">openVerdict()</span>/<span class="sel">submitVerdict()</span> (vermutlich betroffen)</span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Emotionaler Höhepunkt; aktuell am schwächsten. Das Ergebnis-Reveal ist neues Markup, aber datenseitig steht alles bereit (<span class="sel">solution</span> im Case-JSON).</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-mittel">Aufwand: mittel</span><span class="badge b-mittelr">Risiko: mittel</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P6 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-06</span><span class="prop-title">Narrativ-Stimmen visuell trennen</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Watson (kursive Erzählung), Holmes (gerahmte Deduktion), Spieler (Telegramm-Slip), System &amp; „Beweis gesichert" (Stempel) klar unterscheidbar machen.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">.msg-body</span>, <span class="sel">.msg-player</span>, <span class="sel">.msg-system</span>, <span class="sel">.msg-evidence</span> · ggf. neue Klasse <span class="sel">.msg-holmes</span> in <span class="sel">addMsg()</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Erhöht Lesbarkeit &amp; Spielgefühl im meistgenutzten Bereich. Überwiegend CSS auf bestehenden Message-Klassen.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-klein">Aufwand: klein</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P7 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-07</span><span class="prop-title">Verdächtigen-Porträts &amp; Dossier-Politur</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Leere Mugshots durch gravierte Silhouetten-Porträts in ovalem Rahmen ersetzen; Faktentabelle als Akten-Liste.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">.suspect-row</span>, <span class="sel">.suspect-mugshot</span>, <span class="sel">.suspect-status</span>, <span class="sel">#facts-table</span> · <span class="sel">renderSuspects()</span>/<span class="sel">renderFacts()</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Beseitigt den billigsten Eindruck im Dossier. SVG-Silhouetten sind Platzhalter, bis echte Paget-Illustrationen vorliegen.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-mittel">Aufwand: mittel</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P8 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-08</span><span class="prop-title">Typografie- &amp; Material-Feinschliff</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">IM Fell English für Schmuck-/Zitatmomente stärker nutzen; konsistente Hairline-Regeln, Initiale, Pull-Quotes; einheitliche Button-Hover-Haptik.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">:root</span> (Font-Tokens), <span class="sel">.pull-quote</span>, <span class="sel">.quick-btn</span>, <span class="sel">.mh-ornament</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">Niedrig hängende Frucht: vereinheitlicht die Wertigkeit über alle Screens, ohne Layout-Risiko.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-klein">Aufwand: klein</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+
+      <!-- P9 -->
+      <div class="prop">
+        <div class="prop-head"><span class="prop-id">VS-09</span><span class="prop-title">Mobile-Polish</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Ziel</span><span class="v">Tab-Leiste mit Zähler-Badges, sichere Touch-Targets (≥44px), kompakter Stepper ohne Labels, ruhigere Quick-Action-Scrollzeile.</span></div>
+          <div class="prop-row"><span class="k">Bereich</span><span class="v"><span class="sel">#tab-row</span>, <span class="sel">.tab-btn</span>, <span class="sel">#evidence-count</span>, <span class="sel">.quick-actions</span> · Media-Query <span class="sel">@media(max-width:900px)</span></span></div>
+          <div class="prop-row"><span class="k">Warum</span><span class="v">App ist mobil und desktop; der mobile Stepper/Tab-Bereich profitiert direkt von VS-01.</span></div>
+          <div class="prop-row"><span class="k">Bewertung</span><span class="v"><div class="badges"><span class="badge b-klein">Aufwand: klein</span><span class="badge b-niedrig">Risiko: niedrig</span></div></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 4 MVP ══ -->
+    <section class="sec" id="s4">
+      <span class="sec-num">Abschnitt IV</span>
+      <h2 class="sec-h">4 · MVP-Auswahl für den Codex-Sprint</h2>
+      <p class="note">Fünf Änderungen, bester Nutzen bei überschaubarem Risiko. Reihenfolge = empfohlene Umsetzungsfolge (VS-04 zuerst, weil das Siegel von VS-03/VS-05 referenziert wird).</p>
+
+      <div class="mvp">
+        <div class="prop-head"><span class="prop-id">MVP-1 · VS-04</span><span class="prop-title">Wachssiegel-Signet</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Zweck</span><span class="v">Markenkonstante, die alle weiteren Screens verklammert.</span></div>
+          <div class="prop-row"><span class="k">Bereiche</span><span class="v"><span class="sel">#masthead</span>, <span class="sel">#splash</span>, <span class="sel">.verdict-head</span></span></div>
+          <div class="prop-row"><span class="k">Jetzt, weil</span><span class="v">Voraussetzung für MVP-2 und MVP-5; ein einziges SVG-Snippet.</span></div>
+          <div class="prop-row"><span class="k">Akzeptanz</span><span class="v"><ul><li>Inline-SVG-Siegel erscheint in Masthead, Splash und Verdict-Kopf.</li><li>Skaliert scharf von 22px bis 80px, keine externen Requests.</li><li>Keine Layoutverschiebung bestehender Elemente.</li></ul></span></div>
+          <div class="prop-row"><span class="k">Vorsicht</span><span class="v">Nicht über Klick-Targets legen; <span class="sel">pointer-events:none</span> bzw. <span class="sel">aria-hidden</span> setzen.</span></div>
+        </div>
+      </div>
+
+      <div class="mvp">
+        <div class="prop-head"><span class="prop-id">MVP-2 · VS-01</span><span class="prop-title">Phasen-Stepper</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Zweck</span><span class="v">Fortschritt &amp; Phase auf einen Blick; größter Game-Feel-Gewinn.</span></div>
+          <div class="prop-row"><span class="k">Bereiche</span><span class="v"><span class="sel">#progress-bar-wrap</span> und Kinder · Update-Hook <span class="sel">updatePhaseBanner()</span></span></div>
+          <div class="prop-row"><span class="k">Jetzt, weil</span><span class="v">Kleinster Aufwand, höchste Wirkung; Phasen-Labels liegen bereits in den Falldaten.</span></div>
+          <div class="prop-row"><span class="k">Akzeptanz</span><span class="v"><ul><li>5 Knoten mit Verbindungslinie; erledigte Phasen gefüllt, aktuelle hervorgehoben.</li><li>Aktualisiert sich über die bestehende Fortschritts-Berechnung — keine neue Logik.</li><li>Desktop zeigt Labels, Mobile zeigt nur Knoten (siehe VS-09).</li></ul></span></div>
+          <div class="prop-row"><span class="k">Vorsicht</span><span class="v">Den vorhandenen Prozentwert weiterverwenden; Knoten-Zustand nur aus vorhandenem Phase-Index ableiten, keinen neuen State einführen.</span></div>
+        </div>
+      </div>
+
+      <div class="mvp">
+        <div class="prop-head"><span class="prop-id">MVP-3 · VS-02</span><span class="prop-title">Asservat-Beweiskarten</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Zweck</span><span class="v">Zentrale Marken-Identität an häufig besuchter Stelle.</span></div>
+          <div class="prop-row"><span class="k">Bereiche</span><span class="v"><span class="sel">.evidence-card*</span>, <span class="sel">.evidence-tag</span> · <span class="sel">renderEvidence()</span></span></div>
+          <div class="prop-row"><span class="k">Jetzt, weil</span><span class="v">Render-Funktion &amp; Tags existieren; überwiegend CSS plus kleines Markup.</span></div>
+          <div class="prop-row"><span class="k">Akzeptanz</span><span class="v"><ul><li>Karte zeigt Referenz-ID, Typ-Stempel, „Gesichert"-Stempel und Lochung/Faden.</li><li>Optional: Klick öffnet Asservat-Detailansicht (sonst als VS-Park markieren).</li><li>Bestehende <span class="sel">tag-*</span>-Farbsemantik bleibt erhalten.</li></ul></span></div>
+          <div class="prop-row"><span class="k">Vorsicht</span><span class="v">Markup-Struktur in <span class="sel">renderEvidence()</span> minimal halten; <span class="sel">escHtml()</span>-Nutzung beibehalten.</span></div>
+        </div>
+      </div>
+
+      <div class="mvp">
+        <div class="prop-head"><span class="prop-id">MVP-4 · VS-06</span><span class="prop-title">Narrativ-Stimmen trennen</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Zweck</span><span class="v">Lesbarkeit &amp; Spielgefühl im meistgenutzten Bereich.</span></div>
+          <div class="prop-row"><span class="k">Bereiche</span><span class="v"><span class="sel">.msg-*</span> in <span class="sel">#chat-area</span></span></div>
+          <div class="prop-row"><span class="k">Jetzt, weil</span><span class="v">Reines CSS auf vorhandenen Message-Klassen; sofort spürbar.</span></div>
+          <div class="prop-row"><span class="k">Akzeptanz</span><span class="v"><ul><li>Watson, Spieler, System und Beweis-Flash sind klar unterscheidbar.</li><li>Bestehende Sprecher-Logik in <span class="sel">addMsg()</span> bleibt unverändert.</li></ul></span></div>
+          <div class="prop-row"><span class="k">Vorsicht</span><span class="v">Optionale <span class="sel">.msg-holmes</span>-Klasse nur additiv; wenn unklar, im ersten Sprint weglassen.</span></div>
+        </div>
+      </div>
+
+      <div class="mvp">
+        <div class="prop-head"><span class="prop-id">MVP-5 · VS-05</span><span class="prop-title">Verdict-Drama (Light-Variante)</span></div>
+        <div class="prop-body">
+          <div class="prop-row"><span class="k">Zweck</span><span class="v">Emotionaler Höhepunkt; aktuell am schwächsten.</span></div>
+          <div class="prop-row"><span class="k">Bereiche</span><span class="v"><span class="sel">#verdict-overlay</span>, <span class="sel">.verdict-head</span>, <span class="sel">.verdict-select</span></span></div>
+          <div class="prop-row"><span class="k">Jetzt, weil</span><span class="v">Hohe Wirkung; im ersten Sprint genügt das Kopf-Reskin + Ergebnis-Stempel, ohne die Auswertungslogik zu verändern.</span></div>
+          <div class="prop-row"><span class="k">Akzeptanz</span><span class="v"><ul><li>Verdict-Kopf trägt Siegel &amp; „Anklage erheben" in Blutrot.</li><li>Ergebnis erscheint als Stempel-Reveal („Fall gelöst"/„Fehlschluss").</li><li>Die bestehende <span class="sel">submitVerdict()</span>-Auswertung bleibt unangetastet — nur die Darstellung des Ergebnisses wird gestylt.</li></ul></span></div>
+          <div class="prop-row"><span class="k">Vorsicht</span><span class="v">Porträt-Auswahl-Grid nur, wenn ohne Logikumbau machbar; sonst Dropdown belassen und später aufwerten (siehe Park).</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 5 PARK ══ -->
+    <section class="sec" id="s5">
+      <span class="sec-num">Abschnitt V</span>
+      <h2 class="sec-h">5 · Geparkte Ideen für später</h2>
+
+      <div class="prop"><div class="prop-head"><span class="prop-title">Interaktive Ermittlungskarte</span></div><div class="prop-body">
+        <div class="prop-row"><span class="k">Spannend</span><span class="v">Klickbare London-Karte mit Orts-Pins ersetzt den statischen Karten-Hintergrund — starkes Spielgefühl.</span></div>
+        <div class="prop-row"><span class="k">Später, weil</span><span class="v">Echte Interaktion + Asset-/Koordinatenarbeit; berührt Navigations- und Orts-Logik.</span></div>
+        <div class="prop-row"><span class="k">Abhängig von</span><span class="v">VS-07 (Orts-Darstellung), lizenzfreiem Kartenmaterial, Travel-Hooks.</span></div>
+      </div></div>
+
+      <div class="prop"><div class="prop-head"><span class="prop-title">Schlussfolgerungs-Pinnwand (Fäden &amp; Nadeln)</span></div><div class="prop-body">
+        <div class="prop-row"><span class="k">Spannend</span><span class="v">Beweise als Karten, durch rote Fäden verbunden — die ikonische Detektiv-Pinnwand.</span></div>
+        <div class="prop-row"><span class="k">Später, weil</span><span class="v">Aufwendiges Layout-/Verbindungssystem; eigenes Feature, kein Polish.</span></div>
+        <div class="prop-row"><span class="k">Abhängig von</span><span class="v">Stabiler Deduktions-Datenstruktur (<span class="sel">G.deductions</span>), Drag-/Canvas-Logik.</span></div>
+      </div></div>
+
+      <div class="prop"><div class="prop-head"><span class="prop-title">Größere Animationen &amp; Übergänge</span></div><div class="prop-body">
+        <div class="prop-row"><span class="k">Spannend</span><span class="v">Seitenwechsel als Aktenblättern, Siegel-Bruch-Animation, Tinten-Einblendungen.</span></div>
+        <div class="prop-row"><span class="k">Später, weil</span><span class="v">Performance- und Reduced-Motion-Sorgfalt nötig; Wirkung/Aufwand im Polish-Sprint ungünstig.</span></div>
+        <div class="prop-row"><span class="k">Abhängig von</span><span class="v"><span class="sel">prefers-reduced-motion</span>-Strategie, stabilem Screen-State.</span></div>
+      </div></div>
+
+      <div class="prop"><div class="prop-head"><span class="prop-title">Echtes Illustrationssystem (Paget-Stiche)</span></div><div class="prop-body">
+        <div class="prop-row"><span class="k">Spannend</span><span class="v">Pro Fall kuratierte, gemeinfreie Strand-Illustrationen heben die Wertigkeit massiv.</span></div>
+        <div class="prop-row"><span class="k">Später, weil</span><span class="v">Asset-Beschaffung, Hosting/Offline-Strategie, Rechte-/CDN-Fragen — keine reine Optik.</span></div>
+        <div class="prop-row"><span class="k">Abhängig von</span><span class="v">Bild-Pipeline, verlässlichem CDN (aktuell <span class="sel">.illustration-box</span> mit Fallback).</span></div>
+      </div></div>
+
+      <div class="prop"><div class="prop-head"><span class="prop-title">Porträt-Auswahl-Grid im Verdict (Vollausbau)</span></div><div class="prop-body">
+        <div class="prop-row"><span class="k">Spannend</span><span class="v">Anklage per Verdächtigen-Porträtkarten statt Dropdown (im Prototyp gezeigt).</span></div>
+        <div class="prop-row"><span class="k">Später, weil</span><span class="v">Berührt die Auswahl-/Auswertungslogik von <span class="sel">submitVerdict()</span>; im MVP bewusst als Kopf-/Ergebnis-Reskin gehalten.</span></div>
+        <div class="prop-row"><span class="k">Abhängig von</span><span class="v">Bestätigung, dass die Verdächtigen-Quelle stabil aus dem Case-JSON kommt.</span></div>
+      </div></div>
+    </section>
+
+    <!-- ══ 6 CODEX-HANDOFF ══ -->
+    <section class="sec" id="s6">
+      <span class="sec-num">Abschnitt VI</span>
+      <h2 class="sec-h">6 · Codex-Handoff</h2>
+
+      <h3>Ziel des Design-Sprints</h3>
+      <p>BakerstreetRPG visuell von „atmosphärischem Tool" zu „Gaslight-Noir-Detektivspiel" heben — durch fünf gezielte Reskins bestehender Container (MVP-1 bis MVP-5), strikt minimal-invasiv und ohne Eingriff in Spiel-, State-, Case- oder Sync-Logik.</p>
+
+      <h3>In-Scope</h3>
+      <ul>
+        <li class="plus">CSS in <span class="sel">&lt;style&gt;</span> der <span class="sel">index.html</span> (Tokens, Komponenten-Styles).</li>
+        <li class="plus">Inline-SVG-Siegel als wiederverwendbares Snippet.</li>
+        <li class="plus">Minimale, additive Markup-Ergänzungen in den Render-Funktionen <span class="sel">renderEvidence()</span> und im Aufbau von <span class="sel">#progress-bar-wrap</span> / <span class="sel">.verdict-head</span>.</li>
+        <li class="plus">Media-Query-Feinschliff für Mobile (VS-09).</li>
+      </ul>
+
+      <h3>Out-of-Scope</h3>
+      <ul>
+        <li class="minus">Jede Änderung an State-, Save-, Registry-, Case-Loading- oder Gist-Sync-Logik.</li>
+        <li class="minus">Umbau von <span class="sel">handleSend()</span>, <span class="sel">checkAllTriggers()</span>, Beweis-/Phasen-Berechnung, <span class="sel">submitVerdict()</span>-Auswertung.</li>
+        <li class="minus">Neue Frameworks, Build-Steps, externe Asset-Abhängigkeiten oder Multi-Case-Logik.</li>
+        <li class="minus">Interaktive Karte, Pinnwand, große Animationen (siehe Abschnitt 5).</li>
+      </ul>
+
+      <h3>Betroffene Screens / Komponenten</h3>
+      <table>
+        <tr><th>Bereich</th><th>Primäre Selektoren</th><th>JS-Hook (nur lesen/rendern)</th></tr>
+        <tr><td>Phasen-Stepper</td><td><span class="sel">#progress-bar-wrap</span>, <span class="sel">#progress-fill</span>, <span class="sel">#progress-phase</span></td><td><span class="sel">updatePhaseBanner()</span></td></tr>
+        <tr><td>Beweise</td><td><span class="sel">.evidence-card</span>, <span class="sel">.evidence-tag</span></td><td><span class="sel">renderEvidence()</span></td></tr>
+        <tr><td>Splash/Selector</td><td><span class="sel">#splash</span>, <span class="sel">#case-selector</span>, <span class="sel">.case-entry</span></td><td>Render der Fallliste</td></tr>
+        <tr><td>Siegel/Marke</td><td><span class="sel">#masthead</span>, <span class="sel">.verdict-head</span></td><td>—</td></tr>
+        <tr><td>Verdict</td><td><span class="sel">#verdict-overlay</span>, <span class="sel">.verdict-head</span></td><td><span class="sel">submitVerdict()</span> (nur Ergebnis-Darstellung)</td></tr>
+        <tr><td>Narrativ</td><td><span class="sel">.msg-*</span> in <span class="sel">#chat-area</span></td><td><span class="sel">addMsg()</span></td></tr>
+      </table>
+
+      <h3>Bevorzugte Art der Umsetzung</h3>
+      <ul>
+        <li>Als <strong>CSS-Diff gegen vorhandene Selektoren</strong>; neue Klassen nur additiv, bestehende IDs/Klassen nicht umbenennen.</li>
+        <li>Pro MVP ein <strong>eigener, kleiner Commit</strong>; Reihenfolge MVP-1 → MVP-5.</li>
+        <li>Markup-Änderungen nur dort, wo unvermeidbar, und dann <strong>strukturgleich</strong> (gleiche Hooks, gleiche Datenquellen).</li>
+        <li>Werte aus den <strong>vorhandenen <span class="sel">:root</span>-Tokens</strong> beziehen; keine neuen Magic-Colors erfinden.</li>
+      </ul>
+
+      <h3>Vorsichtsregeln</h3>
+      <ul>
+        <li class="minus">Keine Render-Funktion in ihrer Datenlogik verändern — nur die erzeugte Markup-/Klassentstruktur.</li>
+        <li class="minus"><span class="sel">escHtml()</span>-Aufrufe und bestehende <span class="sel">onclick</span>-Hooks erhalten.</li>
+        <li class="minus">Keine Festwerte aus dem Case-JSON ins UI hardcoden (mehrfall-fähig bleiben).</li>
+        <li class="minus">Animationen mit <span class="sel">prefers-reduced-motion</span> absichern; Sichtbarkeit nie allein über Opacity-Animationen herstellen.</li>
+      </ul>
+
+      <h3>Review- / Test-Checkliste</h3>
+      <ul>
+        <li>Bestehender Fall „Eine Studie in Scharlachrot" startet, lädt und ist durchspielbar wie zuvor.</li>
+        <li>Beweise sichern, Phase wechseln, Anklage erheben — alle Flows funktional unverändert.</li>
+        <li>Desktop (Sidebar) und Mobile (Tabs) korrekt, Touch-Targets ≥44px.</li>
+        <li>Kein neuer Console-Fehler; Offline/Service-Worker-Verhalten unverändert.</li>
+        <li>localStorage-Keys und Save-Format unverändert.</li>
+        <li>Visuelle Abnahme gegen <span class="sel">Prototyp.html</span>.</li>
+      </ul>
+
+      <h3>Akzeptanzkriterien (Sprint-Ebene)</h3>
+      <ul>
+        <li class="plus">Alle fünf MVPs sind sichtbar umgesetzt und entsprechen der Prototyp-Wirkung.</li>
+        <li class="plus">Diff besteht ganz überwiegend aus CSS plus klar abgegrenzten, additiven Markup-Stellen.</li>
+        <li class="plus">Keine Datei außer <span class="sel">index.html</span> (Styles/Markup) berührt; keine Logikpfade geändert.</li>
+        <li class="plus">Gesamte bestehende Funktionalität regressionsfrei.</li>
+      </ul>
+    </section>
+
+    <!-- ══ 7 JSON ══ -->
+    <section class="sec" id="s7">
+      <span class="sec-num">Abschnitt VII</span>
+      <h2 class="sec-h">7 · JSON-Handoff</h2>
+      <p>Kompakter, importierbarer Block (Schema <span class="sel">roadtrip-design-handoff</span>):</p>
+      <div class="scroll-x">
+<pre>{
+  <span class="pk">"type"</span>: "roadtrip-design-handoff",
+  <span class="pk">"projectTitle"</span>: "BakerstreetRPG",
+  <span class="pk">"designReviewTitle"</span>: "BakerstreetRPG Visual Review",
+  <span class="pk">"summary"</span>: "Starke viktorianische Zeitungs-Identitaet bereits vorhanden. Groesster Hebel: fuenf gezielte Reskins bestehender Container (Phasen-Stepper, Asservat-Beweiskarten, Aktenregal-Splash, Wachssiegel-Signet, dramatischer Verdict) — grosse Wirkung, minimal-invasiv, ohne Logikumbau.",
+  <span class="pk">"designDirection"</span>: [
+    "Fallakte unter Gaslicht: durchgaengige Dossier-/Ermittlungsmappen-Metapher",
+    "Duester-elegant statt kitschig; Atmosphaere nie auf Kosten der Lesbarkeit",
+    "Bestehende Palette &amp; Font-Trio beibehalten (paper/ink, Playfair/Libre Baskerville/Special Elite)",
+    "Akzente sparsam: blood=Gefahr/Beweis, verdigris=bestaetigt/Spieler, gold=Dokumente",
+    "Wiederkehrendes SH-Wachssiegel als Markenkonstante"
+  ],
+  <span class="pk">"selectedChanges"</span>: [
+    {
+      <span class="pk">"id"</span>: "design-001",
+      <span class="pk">"title"</span>: "Wachssiegel-Signet als Markenkonstante",
+      <span class="pk">"screen"</span>: "Masthead / Splash / Verdict",
+      <span class="pk">"component"</span>: "#masthead, #splash, .verdict-head",
+      <span class="pk">"problem"</span>: "Keine wiederkehrende Markenkonstante verklammert die Screens.",
+      <span class="pk">"desiredChange"</span>: "Inline-SVG SH-Wachssiegel an drei Ankerpunkten platzieren.",
+      <span class="pk">"effort"</span>: "klein",
+      <span class="pk">"risk"</span>: "niedrig",
+      <span class="pk">"acceptanceCriteria"</span>: [
+        "Siegel in Masthead, Splash und Verdict-Kopf sichtbar",
+        "Scharf von 22px bis 80px, keine externen Requests, kein Layout-Shift"
+      ]
+    },
+    {
+      <span class="pk">"id"</span>: "design-002",
+      <span class="pk">"title"</span>: "Phasen-Stepper statt Fortschrittsbalken",
+      <span class="pk">"screen"</span>: "Hauptlayout / Fortschrittsanzeige",
+      <span class="pk">"component"</span>: "#progress-bar-wrap, #progress-fill, #progress-phase",
+      <span class="pk">"problem"</span>: "Duenner Balken verschenkt die 5 benannten Ermittlungsphasen.",
+      <span class="pk">"desiredChange"</span>: "Stepper mit 5 Knoten + Verbindungslinie; erledigt/aktuell hervorgehoben.",
+      <span class="pk">"effort"</span>: "klein",
+      <span class="pk">"risk"</span>: "niedrig",
+      <span class="pk">"acceptanceCriteria"</span>: [
+        "Knoten-Zustand allein aus vorhandenem Phase-Index/Prozentwert abgeleitet",
+        "Desktop mit Labels, Mobile nur Knoten; keine neue Logik"
+      ]
+    },
+    {
+      <span class="pk">"id"</span>: "design-003",
+      <span class="pk">"title"</span>: "Beweise als Asservat-Karten",
+      <span class="pk">"screen"</span>: "Evidence / Beweise",
+      <span class="pk">"component"</span>: ".evidence-card, .evidence-tag, renderEvidence()",
+      <span class="pk">"problem"</span>: "Beweis-Cards wirken flach, ohne haptische Dossier-Qualitaet.",
+      <span class="pk">"desiredChange"</span>: "Karteikarten mit Referenz-ID, Typ-Stempel, Gesichert-Stempel, Lochung/Faden.",
+      <span class="pk">"effort"</span>: "mittel",
+      <span class="pk">"risk"</span>: "niedrig",
+      <span class="pk">"acceptanceCriteria"</span>: [
+        "tag-* Farbsemantik bleibt erhalten",
+        "Markup-Aenderung in renderEvidence() minimal &amp; additiv, escHtml() beibehalten"
+      ]
+    },
+    {
+      <span class="pk">"id"</span>: "design-004",
+      <span class="pk">"title"</span>: "Narrativ-Stimmen visuell trennen",
+      <span class="pk">"screen"</span>: "Chat / Bericht",
+      <span class="pk">"component"</span>: ".msg-player, .msg-system, .msg-evidence (opt. .msg-holmes)",
+      <span class="pk">"problem"</span>: "Watson, Spieler, System &amp; Beweis-Flash sind visuell zu aehnlich.",
+      <span class="pk">"desiredChange"</span>: "Eigene Stil-Behandlung je Sprecher (kursiv / Telegramm-Slip / Stempel).",
+      <span class="pk">"effort"</span>: "klein",
+      <span class="pk">"risk"</span>: "niedrig",
+      <span class="pk">"acceptanceCriteria"</span>: [
+        "Sprecher klar unterscheidbar",
+        "addMsg()-Sprecherlogik unveraendert; neue Klasse nur additiv"
+      ]
+    },
+    {
+      <span class="pk">"id"</span>: "design-005",
+      <span class="pk">"title"</span>: "Verdict-Drama (Kopf- &amp; Ergebnis-Reskin)",
+      <span class="pk">"screen"</span>: "Verdict / Abschluss",
+      <span class="pk">"component"</span>: "#verdict-overlay, .verdict-head, .verdict-select",
+      <span class="pk">"problem"</span>: "Dramatischster Moment fuehlt sich als Formular am wenigsten spielartig an.",
+      <span class="pk">"desiredChange"</span>: "Siegel-Kopf in Blutrot; Ergebnis als Stempel-Reveal (Fall geloest/Fehlschluss).",
+      <span class="pk">"effort"</span>: "mittel",
+      <span class="pk">"risk"</span>: "mittel",
+      <span class="pk">"acceptanceCriteria"</span>: [
+        "submitVerdict()-Auswertung unveraendert, nur Ergebnis-Darstellung gestylt",
+        "Porträt-Auswahl-Grid nur falls ohne Logikumbau machbar, sonst geparkt"
+      ]
+    }
+  ],
+  <span class="pk">"parkedIdeas"</span>: [
+    { <span class="pk">"title"</span>: "Interaktive Ermittlungskarte", <span class="pk">"reason"</span>: "Hohes Spielgefuehl, ersetzt statischen Kartenhintergrund", <span class="pk">"laterNeed"</span>: "Echte Interaktion, Kartenmaterial, Travel-Hooks" },
+    { <span class="pk">"title"</span>: "Schlussfolgerungs-Pinnwand mit Faeden", <span class="pk">"reason"</span>: "Ikonisches Detektiv-Motiv", <span class="pk">"laterNeed"</span>: "Eigenes Layout-/Verbindungssystem, kein Polish" },
+    { <span class="pk">"title"</span>: "Groessere Animationen / Aktenblaettern", <span class="pk">"reason"</span>: "Mehr Politur &amp; Drama", <span class="pk">"laterNeed"</span>: "prefers-reduced-motion-Strategie, Performance" },
+    { <span class="pk">"title"</span>: "Echtes Paget-Illustrationssystem", <span class="pk">"reason"</span>: "Hebt Wertigkeit massiv", <span class="pk">"laterNeed"</span>: "Asset-Pipeline, Hosting/Offline, Rechte" },
+    { <span class="pk">"title"</span>: "Verdict-Portraet-Grid (Vollausbau)", <span class="pk">"reason"</span>: "Anklage per Portraetkarten", <span class="pk">"laterNeed"</span>: "Beruehrt submitVerdict()-Auswahllogik" }
+  ],
+  <span class="pk">"codexInstructions"</span>: [
+    "Nur index.html (Style + minimal additives Markup) anfassen; keine Logikpfade aendern",
+    "Als CSS-Diff gegen bestehende Selektoren arbeiten; IDs/Klassen nicht umbenennen",
+    "Pro MVP ein kleiner Commit, Reihenfolge design-001 bis design-005",
+    "Werte aus vorhandenen :root-Tokens beziehen, keine neuen Magic-Colors",
+    "Render-Funktionen nur in der erzeugten Markup-Struktur veraendern, nie in der Datenlogik",
+    "Animationen mit prefers-reduced-motion absichern; Sichtbarkeit nie nur via Opacity-Animation"
+  ],
+  <span class="pk">"acceptanceCriteria"</span>: [
+    "Bestehender Fall startet, laedt und ist regressionsfrei durchspielbar",
+    "Desktop (Sidebar) und Mobile (Tabs) korrekt, Touch-Targets >=44px",
+    "Keine neuen Console-Fehler; Offline/Service-Worker &amp; localStorage unveraendert",
+    "Visuelle Abnahme gegen Prototyp.html bestanden"
+  ],
+  <span class="pk">"risks"</span>: [
+    "Markup-Aenderungen in Render-Funktionen koennten onclick-/escHtml-Hooks brechen — strukturgleich halten",
+    "Verdict-Reskin grenzt an Auswertungslogik — im MVP auf Darstellung beschraenken",
+    "Opacity-basierte Entrance-Animationen koennen Inhalte unsichtbar lassen, wenn Tab/Animation pausiert"
+  ]
+}</pre>
+      </div>
+    </section>
+
+    <div class="divider"><span>Ende der Akte</span></div>
+    <div class="footer">„Sie sehen, aber Sie beobachten nicht." — Begleitend: <strong>Prototyp.html</strong> als klickbare Referenz.</div>
+
+  </div>
+</div>
+</body>
+</html>
